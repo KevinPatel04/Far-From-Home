@@ -1,10 +1,10 @@
 # far_from_home
-## US_002 Upload_Image_Module
-### Version 1.0
+#### US_002 Upload_Image_Module
+##### Version 1.0
 
-### Author Kevin Patel
-### Date Created: 16/09/2019
-### Date Updated: 16/09/2019
+##### Author Kevin Patel
+##### Date Created: 16/09/2019
+##### Date Updated: 16/09/2019
 
 #### Setup
 <ol>
