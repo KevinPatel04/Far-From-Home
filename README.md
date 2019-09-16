@@ -1,16 +1,40 @@
 # far_from_home
+## US_002 Upload_Image_Module
+### Version 1.0
 
-A new Flutter application.
+### Author Kevin Patel
+### Date Created: 16/09/2019
+### Date Updated: 16/09/2019
 
-## Getting Started
+#### Setup
+<ol>
+  <li>
+    Create Firebase Project & Add .Json file under  './app' folder.
+  </li>
+  <li>
+    Include all the dependency as in build.gradle under './app' & in project; also add dependency in pubspec.yaml as metioned.
+  </li>
+  <li>
+    Update 'final FirebaseStorage _storage = FirebaseStorage(storageBucket: 'gs://far-from-home-*****.appspot.com');'.
+  </li>
+  <li>
+    Yahh! you are all set to go...
+  </li>
+</ol>
+  
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#### References
+<ul>
+  <li>
+    https://pub.dev/packages/image_picker#-readme-tab-
+  </li>
+  <li>
+    https://pub.dev/packages/image_cropper#-readme-tab-
+  </li>
+  <li>
+    https://pub.dev/packages/cloud_firestore#-readme-tab-
+  </li>  
+  <li>
+    https://fireship.io/lessons/flutter-file-uploads-cloud-storage/
+  </li>
+</ul>
