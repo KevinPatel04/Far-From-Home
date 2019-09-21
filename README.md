@@ -37,4 +37,7 @@
   <li>
     https://fireship.io/lessons/flutter-file-uploads-cloud-storage/
   </li>
+  <li>
+    <b>https://stackoverflow.com/questions/57238933/gradle-failure-a-problem-occurred-evaluating-project-app</b>
+  </li>
 </ul>
