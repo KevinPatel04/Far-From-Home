@@ -6,12 +6,12 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:multi_image_picker/src/asset.dart';
 
-void main() {
+/*void main() {
   runApp(MaterialApp(
     title: 'Address',
-    home: AddImages(),
+    home: ThisIsRoute(),
   ));
-}
+}*/
 
 class AddImages extends StatelessWidget{
    @override
@@ -22,6 +22,11 @@ class AddImages extends StatelessWidget{
       home: MultiImage(),
     );
   }
+}
+
+class MultiImage extends StatefulWidget {
+  @override
+  _MultiImageState createState() => new _MultiImageState();
 }
 
 class Choice {
@@ -57,11 +62,6 @@ class ChoiceCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class MultiImage extends StatefulWidget {
-  @override
-  _MultiImageState createState() => new _MultiImageState();
 }
 
 class _MultiImageState extends State<MultiImage> {
@@ -100,16 +100,14 @@ class _MultiImageState extends State<MultiImage> {
       StorageTaskSnapshot storageTaskSnapshot = await task.onComplete;
       String url = await storageTaskSnapshot.ref.getDownloadURL();
       
+      
       //print("\nUploaded: "+url);
       //Download URL's 
       imageDataPath['image${i + 1}'] = url;
       i++;
   }
-
   //Uploading images
   Future<Null> _uploadImages(){
-    int l = images.length;
-    
     images.forEach((pic) {
       _addImages(pic);
     });
