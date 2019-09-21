@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "1080174311751",
+    "firebase_url": "https://far-from-home-5a40e.firebaseio.com",
+    "project_id": "far-from-home-5a40e",
+    "storage_bucket": "far-from-home-5a40e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080174311751:android:08a43ce3719a274ebbf462",
+        "android_client_info": {
+          "package_name": "com.example.far_from_home"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1080174311751-bfdj3mhaq7bfmfvjhha6vv705nn0usqq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxq73mhaFglF-W6MOoyrR1op3eA2zG6Nw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1080174311751-bfdj3mhaq7bfmfvjhha6vv705nn0usqq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080174311751:android:ccd77fcc2749e687bbf462",
+        "android_client_info": {
+          "package_name": "com.example.image_carousel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1080174311751-bfdj3mhaq7bfmfvjhha6vv705nn0usqq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxq73mhaFglF-W6MOoyrR1op3eA2zG6Nw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1080174311751-bfdj3mhaq7bfmfvjhha6vv705nn0usqq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
