@@ -10,6 +10,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:farfromhome/Authentication.dart';
 
 void main() => runApp(FarFromHome());
 
@@ -110,15 +111,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     borderRadius: new BorderRadius.circular(50),
                   ),
                   onPressed: (){
-                    Fluttertoast.showToast(
-                        msg: "This is Create Account Toast",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIos: 1,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                        fontSize: 16.0
-                    );
+                    Navigator.of(context).push(_createSignupRoute());
+                    // Fluttertoast.showToast(
+                    //     msg: "This is Create Account Toast",
+                    //     toastLength: Toast.LENGTH_SHORT,
+                    //     gravity: ToastGravity.BOTTOM,
+                    //     timeInSecForIos: 1,
+                    //     backgroundColor: Colors.black,
+                    //     textColor: Colors.white,
+                    //     fontSize: 16.0
+                    // );
                   },
                 ),
               ),
@@ -134,15 +136,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     borderRadius: new BorderRadius.circular(50),
                   ),
                   onPressed: (){
-                    Fluttertoast.showToast(
-                        msg: "This is Sign In Toast",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIos: 1,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                        fontSize: 16.0
-                    );
+                     Navigator.of(context).push(_createLoginRoute());
+                    // Fluttertoast.showToast(
+                    //     msg: "This is Sign In Toast",
+                    //     toastLength: Toast.LENGTH_SHORT,
+                    //     gravity: ToastGravity.BOTTOM,
+                    //     timeInSecForIos: 1,
+                    //     backgroundColor: Colors.black,
+                    //     textColor: Colors.white,
+                    //     fontSize: 16.0
+                    // );
                   },
                 ),
               ),
@@ -152,4 +155,22 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+Route _createLoginRoute() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>  LoginPage(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return child;
+      },
+    );
+  }
+
+Route _createSignupRoute() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) =>  SignupPage(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return child;
+    },
+  );
 }

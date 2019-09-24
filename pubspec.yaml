@@ -51,8 +51,9 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   assets:
-    - assets/undraw_best_place.png
-    - assets/firstPage.png
+    - assets/landing_page.png
+    - assets/logo_inverted_transperant.png
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
