@@ -47,6 +47,7 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
       return Container(
         height: MediaQuery.of(context).size.height*0.30,
         child: Swiper(
+          autoplay: true,
           itemBuilder: (BuildContext context, int index) {
             return ClipRRect(
               borderRadius: BorderRadius.circular(0.0),
