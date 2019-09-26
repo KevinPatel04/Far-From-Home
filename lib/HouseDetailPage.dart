@@ -14,17 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 
 final String headImageAssetPath="";
-final List<String> imgList = [
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/download.jpg?alt=media&token=eaf87b7c-b495-400c-b7b5-cfea7d455af6',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/images%20(1).jpg?alt=media&token=14c9f7be-84b9-4bef-a8fb-80f4f04b18ec',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/images%20(2).jpg?alt=media&token=4380d318-bb13-4fe9-af8c-4323370387bc',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/images%20(3).jpg?alt=media&token=3d5618cb-d811-49eb-8b41-f32bd547e6f7',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/images%20(4).jpg?alt=media&token=605f222f-57ed-4547-9dd1-9886d41c9936',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/images%20(5).jpg?alt=media&token=181b8dac-782a-49f1-a71c-e04eb9cbae69',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/images%20(6).jpg?alt=media&token=b1ce725a-b671-487c-8576-11421d755dac',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/images.jpg?alt=media&token=aa05f576-bb40-4b0c-9425-23a3c07ba484',
-  'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/shangrila.jpg?alt=media&token=35079859-b9c9-4d08-90ed-480906a4f53d'
-];
+final List<String> imgList = [];
 
 final Widget placeholder = Container(color: Colors.grey);
 List<T> map<T>(List list, Function handler) {
@@ -37,8 +27,10 @@ List<T> map<T>(List list, Function handler) {
 }
 
 class CarouselWithIndicator extends StatefulWidget {
+  final DocumentSnapshot snapshot;
   @override
-  _CarouselWithIndicatorState createState() => _CarouselWithIndicatorState();
+  _CarouselWithIndicatorState createState() => _CarouselWithIndicatorState(snapshot);
+  CarouselWithIndicator(this.snapshot);
 }
 
 class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
@@ -47,13 +39,8 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
   bool _pinned = true;
   bool _snap = false;
   bool _floating = false;
-
-  final DocumentReference documentReference =
-      Firestore.instance.collection("House").document();
-  @override
-  void initState(){
-    super.initState();
-  }
+  final DocumentSnapshot snapshot;
+  _CarouselWithIndicatorState(this.snapshot);
 
   @override
   Widget build(BuildContext context) {
@@ -64,12 +51,12 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
             return ClipRRect(
               borderRadius: BorderRadius.circular(0.0),
               child: PNetworkImage(
-                imgList[index],
+                snapshot['houseImages'][index],
                 fit: BoxFit.cover,
               ),
             );
           },
-          itemCount: imgList.length,
+          itemCount: snapshot['houseImages'].length,
           viewportFraction: 1,
           scale: 1,
           pagination: SwiperPagination(),
@@ -93,6 +80,12 @@ class _HouseDetailState extends State<HouseDetail>{
     
   bool _isPressed = false;
 
+  
+  @override
+  void initState(){
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {  
     return MaterialApp(
@@ -112,7 +105,8 @@ class _HouseDetailState extends State<HouseDetail>{
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Shangrila Luxury Apartment",
+                  snapshot['Address']['society'],
+                  //"Shangrila Luxury Apartment",
                 ),
               ),
               Align(
@@ -126,7 +120,7 @@ class _HouseDetailState extends State<HouseDetail>{
                         size: 12.0,
                       ),
                       Text(
-                        'Vadodara, India',
+                        '${snapshot['Address']['city']}, ${snapshot['Address']['country'] }',
                         style: TextStyle(
                           fontSize: 12,
                         ),
@@ -175,7 +169,7 @@ class _HouseDetailState extends State<HouseDetail>{
                 Stack(
                   
                   children: <Widget>[
-                    CarouselWithIndicator(),
+                    CarouselWithIndicator(snapshot),
                     Positioned(
                       right: 10,
                       bottom: 10,
@@ -213,7 +207,6 @@ class _HouseDetailState extends State<HouseDetail>{
                     ],
                   ),
                   getCards(), 
-                 // GetUrl(),
                 ], 
               ),
             ),
@@ -224,38 +217,6 @@ class _HouseDetailState extends State<HouseDetail>{
     );
   }
 }
-
-class GetUrl extends StatefulWidget{
-  @override
-  _GetUrlState createState() => _GetUrlState();
-}
-class _GetUrlState extends State<GetUrl>
-{
-  //final DocumentReference documentReference =
-  //  Firestore.instance.collection("House").document();
-  @override
-  Widget build(BuildContext context) {
-      return new Scaffold(
-        body: new StreamBuilder(
-          stream: Firestore.instance.collection("House").snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              child: Text(
-                'No Data...',
-              );
-            } else { 
-              print('++++++++++++++++++++++++++++++++++____________________________--------------------------------');
-              Future<DocumentSnapshot> items = snapshot.data.document("zYIB7WWoAClATPMZqLK2")['description'];
-              print("..................+++++++++++++++++++++++++$items");
-              child: Text(items.toString());
-              //return  CarouselWithIndicator();
-            }
-          }
-        )
-      );
-  }
-}
-
 
 Widget getFirstCard(){
   return Center(
