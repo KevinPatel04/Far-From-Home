@@ -11,6 +11,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:farfromhome/Authentication.dart';
+import 'package:responsive_container/responsive_container.dart';
+import 'package:farfromhome/loading.dart';
 
 void main() => runApp(FarFromHome());
 
@@ -22,7 +24,7 @@ class FarFromHome extends StatelessWidget {
         primaryColor: Colors.blue[700],
         brightness: Brightness.light,
       ),
-      home: MyHomePage(),
+      home: search_loader(),
     );
   }
 }
