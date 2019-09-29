@@ -9,6 +9,8 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Far From Home"
+        android:allowBackup="false"
+
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
