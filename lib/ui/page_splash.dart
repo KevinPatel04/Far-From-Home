@@ -4,6 +4,7 @@ import 'package:farfromhome/ui/page_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:farfromhome/ui/first_screen.dart';
 import 'package:farfromhome/utils/utils.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:responsive_container/responsive_container.dart';
 import '../LocalBindings.dart';
 import 'page_home.dart';
@@ -22,14 +23,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 8), () {
+    Timer(Duration(seconds: 4), () {
        navigateFromSplash();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-     size = Screen(MediaQuery.of(context).size);
+  Widget build(BuildContext context) {    
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
+    FlutterStatusbarcolor.setStatusBarColor(Color(0xfff8f5f0));
+    size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       body: ResponsiveContainer(
         widthPercent: 100,

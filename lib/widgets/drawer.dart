@@ -1,3 +1,6 @@
+import 'package:farfromhome/ui/about_developers.dart';
+import 'package:farfromhome/ui/page_login.dart';
+import 'package:farfromhome/ui/page_users.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -76,7 +79,7 @@ Widget drawer(img,context,_imageUrl,_name,_email){
           // Item 2
           ListTile(
             title: Text(
-                'Item 2',
+                'Pay Rents',
                 style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.w400,
@@ -91,7 +94,7 @@ Widget drawer(img,context,_imageUrl,_name,_email){
               },
             ),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(context,MaterialPageRoute(builder: (_) => Users()));
               // _uri
             },
           ),
@@ -114,7 +117,7 @@ Widget drawer(img,context,_imageUrl,_name,_email){
               },
             ),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(context,MaterialPageRoute(builder: (_)=> AboutDevelopers()));
               // _uri
             },
           ),
@@ -137,7 +140,7 @@ Widget drawer(img,context,_imageUrl,_name,_email){
               },
             ),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_)=> LoginPage()));
               // _uri
             },
           ),

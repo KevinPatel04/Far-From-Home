@@ -4,12 +4,15 @@ import 'package:farfromhome/ui/page_home.dart';
 import 'package:farfromhome/ui/page_login.dart';
 import 'package:farfromhome/ui/page_signup.dart';
 import 'package:farfromhome/utils/responsive_screen.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class FirstScreen extends StatelessWidget {
   Screen size;
   @override
   Widget build(BuildContext context) {
-    
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
+    FlutterStatusbarcolor.setStatusBarColor(Colors.white);
     size = Screen(MediaQuery.of(context).size);
 
     return Scaffold(
@@ -18,8 +21,16 @@ class FirstScreen extends StatelessWidget {
         elevation: 0,
         actions: <Widget>[
           FlatButton.icon(
-            label: Text('Skip'),
-            icon: Icon(Icons.close),
+            label: Text(
+              'Skip',
+              style: TextStyle(
+                fontSize: size.getWidthPx(16),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+            icon: Icon(
+              Icons.close,
+            ),
             onPressed: () {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SearchPage()));
             },
@@ -33,11 +44,11 @@ class FirstScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(top: 10),
+                padding: EdgeInsets.only(top: size.getWidthPx(10)),
                 child: Text(
                 'Redefining Your Home',
                   style: new TextStyle(
-                    fontSize: 20.0,
+                    fontSize: size.getWidthPx(20),
                     fontStyle: FontStyle.normal,
                     fontWeight: FontWeight.bold,
                     color: Color(0x991976d2),
@@ -45,11 +56,11 @@ class FirstScreen extends StatelessWidget {
                 )
               ),
               Padding(
-                padding: EdgeInsets.only(bottom: 20),
+                padding: EdgeInsets.only(bottom: size.getWidthPx(20)),
                 child: Text(
                 'Search Experience',
                   style: new TextStyle(
-                    fontSize: 20.0,
+                    fontSize: size.getWidthPx(20),
                     fontStyle: FontStyle.normal,
                     fontWeight: FontWeight.bold,
                     color: Color(0x991976d2),
@@ -57,20 +68,20 @@ class FirstScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: EdgeInsets.all(size.getWidthPx(10)),
               ),
               Image.asset(
                 'assets/landing_page.png',
-                width: double.infinity,
+                width: size.wp(100),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 30.0),
+                padding: EdgeInsets.only(top: size.getWidthPx(30)),
                 child: RaisedButton(
                   child: Text('CREATE FREE ACCOUNT'),
                   color: Colors.blue[700],
                   textColor: Colors.white,
                   elevation: 5,
-                  padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 24.0),
+                  padding: EdgeInsets.symmetric(vertical: size.getWidthPx(10), horizontal: size.getWidthPx(24)),
                   shape: RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(50),
                   ),
@@ -80,7 +91,7 @@ class FirstScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(0,5,0,10),
+                padding: EdgeInsets.fromLTRB(0,size.getWidthPx(5),0,size.getWidthPx(10)),
                 child: RaisedButton(
                   child: Text('SIGN IN'),
                   color: Colors.white,

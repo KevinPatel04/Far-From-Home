@@ -40,7 +40,12 @@ dependencies:
   http:
   flutter_secure_storage:
   flutter_launcher_icons: "^0.7.3"
-  
+  url_launcher: ^5.1.4
+  flutter_range_slider: ^1.4.0
+  razorpay_flutter: ^1.1.2
+  flutter_statusbarcolor: ^0.2.2
+
+
 flutter_icons:
   ios: true
   android: true
@@ -60,6 +65,8 @@ dev_dependencies:
 flutter:
   assets:
     - assets/
+    - assets/icons/
+    - assets/developers/
     - assets/icnfb.png
     - assets/icngmail.png
     - assets/icn_twitter.png

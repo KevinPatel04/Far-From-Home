@@ -132,7 +132,7 @@ class _BoxFieldState extends State<BoxField> {
                   style: TextStyle(fontFamily: 'Exo2'),
                   obscureText: widget.obscureText,
                   controller: widget.controller,
-                  onSaved: widget.onSaved,
+                  onChanged: widget.onSaved,
                   validator: widget.validator,
                   onFieldSubmitted: widget.onFieldSubmitted,
                   decoration:  InputDecoration(
@@ -143,6 +143,7 @@ class _BoxFieldState extends State<BoxField> {
                         size: size.getWidthPx(22),
                       ),
                       hintText: widget.hintText),
+
                 ),
               )),
         ],

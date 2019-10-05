@@ -1,5 +1,7 @@
+import 'package:farfromhome/ui/page_custom_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:farfromhome/model/models.dart';
 import 'package:farfromhome/ui/auth_design.dart';
@@ -17,11 +19,11 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   Screen size;
-  int _selectedIndex = 0;
+  int _selectedIndex = -1;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<Property> recentList =  List();
   List<Property> topList =  List();
-  var citiesList = ["Ahmedabad", "Mumbai", "Delhi ", "Chennai","Goa","Kolkata","Indore","Jaipur"];
+  var citiesList = ["Ahmedabad", "Mumbai", "Anand", "Delhi ", "Vadodara", "Chennai","Goa","Kolkata","Indore","Jaipur"];
   Image image1;
 
   @override
@@ -54,6 +56,9 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
+    FlutterStatusbarcolor.setStatusBarColor(Colors.blue[700].withOpacity(0.9));
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -150,7 +155,7 @@ class _SearchPageState extends State<SearchPage> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    padding: new EdgeInsets.only(top: 15),
+                    padding: new EdgeInsets.only(top: size.getWidthPx(15)),
                     child: Center(
                         child: Align(
                           alignment: Alignment.center,
@@ -158,7 +163,7 @@ class _SearchPageState extends State<SearchPage> {
                             'Searching of a new tenant',
                             style: TextStyle(
                                 fontFamily: 'Exo2',
-                                fontSize: 17.0,
+                                fontSize: size.getWidthPx(17),
                                 fontWeight: FontWeight.w700,
                                 color: Colors.grey,
                             ),
@@ -174,7 +179,7 @@ class _SearchPageState extends State<SearchPage> {
                             'for your property?',
                             style: TextStyle(
                                 fontFamily: 'Exo2',
-                                fontSize: 17.0,
+                                fontSize: size.getWidthPx(17),
                                 fontWeight: FontWeight.w700,
                                 color: Colors.grey,
                             ),
@@ -183,16 +188,17 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                   SizedBox(
-                    height: 3,
+                    height: size.getWidthPx(3),
                   ),
                   Container(
                     child: Image.asset(
                       'assets/post_house.png',
                       fit: BoxFit.fitWidth,
+                      width: size.wp(100),
                     ),
                   ),
                   Container(
-                    padding: new EdgeInsets.fromLTRB(15,0,15,6),
+                    padding: new EdgeInsets.fromLTRB(size.getWidthPx(15),0,size.getWidthPx(15),size.getWidthPx(6)),
                     child: SizedBox(
                       width: double.infinity,
                       child: new RaisedButton(
@@ -233,7 +239,7 @@ class _SearchPageState extends State<SearchPage> {
               Text("Which type of house",
                   style: TextStyle(
                       fontFamily: 'Exo2',
-                      fontSize: 24.0,
+                      fontSize: size.getWidthPx(24),
                       fontWeight: FontWeight.w900,
                       color: Colors.white
                     ),
@@ -241,7 +247,7 @@ class _SearchPageState extends State<SearchPage> {
               Text("would you like to buy?",
                 style: TextStyle(
                     fontFamily: 'Exo2',
-                    fontSize: 24.0,
+                    fontSize: size.getWidthPx(24),
                     fontWeight: FontWeight.w900,
                     color: Colors.white
                     ),
@@ -264,7 +270,17 @@ class _SearchPageState extends State<SearchPage> {
           height: size.getWidthPx(150),
           child: Column(
             children: <Widget>[
-              _searchWidget(),
+              GestureDetector(
+                child: Center(
+                  child: Hero(
+                    tag: 'searcHero',
+                    child: _searchWidget(),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_)=> CustomSearchPage()));
+                },
+              ),
               leftAlignText(
                   text: "Top Cities :",
                   leftPadding: size.getWidthPx(16),
@@ -281,18 +297,36 @@ class _SearchPageState extends State<SearchPage> {
         ));
   }
 
-  BoxField _searchWidget() {
-    return BoxField(
-        controller: TextEditingController(),
-        focusNode: FocusNode(),
-        hintText: "Select by city, area or locality.",
-        lableText: "Search...",
-        obscureText: false,
-        onSaved: (String val) {
-          
-        },
-        icon: Icons.search,
-        iconColor: colorCurve);
+  Widget _searchWidget() {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    size = Screen(MediaQuery.of(context).size);
+    return Container(
+        child:  Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(top: height / 400),
+                  padding: EdgeInsets.all(size.getWidthPx(0)),
+                  alignment: Alignment.center,
+                  height: size.getWidthPx(40),
+                  decoration:  BoxDecoration(
+                      color: Colors.grey.shade100,
+                      border:  Border.all(color: Colors.grey.shade400, width: 1.0),
+                      borderRadius:  BorderRadius.circular(8.0)),
+                  child: Row(children: <Widget>[
+                    SizedBox(width: size.getWidthPx(10),),
+                    Icon(Icons.search,color: colorCurve),
+                    Text("Search by city, area or locality")
+                  ],) 
+              ),),
+          ],
+        ),
+        padding: EdgeInsets.only(bottom :size.getWidthPx(8)),
+        margin: EdgeInsets.only(top: size.getWidthPx(8), right: size.getWidthPx(8), left:size.getWidthPx(8)),
+    );
   }
 
   Padding leftAlignText({text, leftPadding, textColor, fontSize, fontWeight}) {

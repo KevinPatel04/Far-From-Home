@@ -5,6 +5,7 @@ import 'package:farfromhome/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 import 'page_home.dart';
 import 'page_signup.dart';
@@ -19,6 +20,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
+    FlutterStatusbarcolor.setStatusBarColor(Colors.blue[700].withOpacity(1));
     size = Screen(MediaQuery.of(context).size);
 
     return Scaffold(

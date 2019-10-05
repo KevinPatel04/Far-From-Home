@@ -5,6 +5,7 @@ import 'package:farfromhome/ui/page_login.dart';
 import 'package:farfromhome/utils/utils.dart';
 import 'package:farfromhome/widgets/widgets.dart';
 import 'package:farfromhome/ui/auth_design.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 // SIGNUP STARTS HERE
 class SignUpPage extends StatefulWidget {
@@ -16,44 +17,23 @@ class _SignUpPageState extends State<SignUpPage> {
   Screen size;
   @override
   Widget build(BuildContext context) {
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
+    FlutterStatusbarcolor.setStatusBarColor(Colors.blue[700].withOpacity(1));
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.blue[700],
-        elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () { 
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
-              },
-              //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
-        ),
-        title: Center(
-          child:  Text(
-              "Far From Home",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: size.hp(3)
-              ),
-            ),
-        ),
-      ),
       body: ListView(
         children: <Widget>[
           Stack(
             children: <Widget>[
+              
               ClipPath(
                 clipper: WaveClipper2(),
                 child: Container(
                   child: Column(),
                   width: double.infinity,
-                  height: size.hp(11),
+                  height: size.hp(20),
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                           colors: [Color(0x221976d2), Color(0x221976d2)])),
@@ -64,7 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Container(
                   child: Column(),
                   width: double.infinity,
-                  height: size.hp(11),
+                  height: size.hp(20),
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                           colors: [Color(0x441976d2), Color(0x441976d2)])),
@@ -75,14 +55,38 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Container(
                   child: Column(
                     children: <Widget>[
-                      
+                       Center(
+                          child:Container(
+                            padding: EdgeInsets.only(top: size.getWidthPx(10)),
+                            child: Text(
+                              "Far From Home",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: size.getWidthPx(30)
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                   width: double.infinity,
-                  height: size.hp(11),
+                  height: size.hp(20),
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                           colors: [Color(0xff1976d2), Color(0xff1976d2)])),
+                ),
+              ),
+              Positioned(
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () { 
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
+                  },
+                  //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
                 ),
               ),
             ],
