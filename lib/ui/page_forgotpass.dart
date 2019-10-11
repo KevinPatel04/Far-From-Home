@@ -1,7 +1,9 @@
-import 'package:farfromhome/ui/auth_design.dart';
+import 'package:farfromhome/ui/page_login.dart';
 import 'package:flutter/material.dart';
 import 'package:farfromhome/widgets/widgets.dart';
 import 'package:farfromhome/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   @override
@@ -16,6 +18,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   Screen size;
 
+  bool validateAndSave() {
+    final form = _formKey.currentState;
+
+    if (form.validate()) {
+      form.save();
+      print("Email:: $_email");
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void validateAndSubmit() async {
+    if (validateAndSave()) {
+
+      try {
+        FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
+        print("Password reset email sent");
+        Fluttertoast.showToast(msg: "Reset password link is send to your registered email");
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => LoginPage()));
+      }
+      catch (e){
+        print("Error at forgot password ::   $e");
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
@@ -101,7 +131,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       hintText: "Enter email",
       lableText: "Email",
       obscureText: false,
-      onSaved: (String val) {},
+      onSaved: (value) => _email = value,
       validator: validateEmail,
       icon: Icons.email,
       iconColor: colorCurve,
@@ -135,7 +165,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         color: colorCurve,
         onPressed: () {
           // Validate Email First
-          _validateInputs();
+          validateAndSubmit();
         },
       ),
     );
@@ -143,7 +173,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   String validateEmail(String value) {
     RegExp regExp = RegExp(Constants.PATTERN_EMAIL, caseSensitive: false);
-
     if (value.length == 0) {
       return "Email is Required";
     } else if (!regExp.hasMatch(value)) {
@@ -152,16 +181,4 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     return null;
   }
 
-  void _validateInputs() {
-    if (_formKey.currentState.validate()) {
-//    If all data are correct then save data to out variables
-      _formKey.currentState.save();
-      // Go to Dashboard
-    } else {
-//    If all data are not valid then start auto validation.
-      setState(() {
-        _autoValidate = true;
-      });
-    }
-  }
 }

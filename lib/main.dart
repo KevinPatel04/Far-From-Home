@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farfromhome/widgets/invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:farfromhome/ui/page_splash.dart';
@@ -14,7 +16,6 @@ class MyApp extends StatelessWidget {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
     FlutterStatusbarcolor.setStatusBarColor(Color(0xfff8f5f0));
-  
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

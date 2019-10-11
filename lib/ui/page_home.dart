@@ -1,15 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farfromhome/LocalBindings.dart';
 import 'package:farfromhome/ui/page_custom_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:farfromhome/model/models.dart';
-import 'package:farfromhome/ui/auth_design.dart';
 import 'package:farfromhome/utils/utils.dart';
-import 'package:farfromhome/utils/utils.dart' as utils;
 import 'package:farfromhome/widgets/drawer.dart';
 import 'package:farfromhome/widgets/widgets.dart';
-import 'package:responsive_container/responsive_container.dart';
 import 'package:intl/intl.dart';
 
 class SearchPage extends StatefulWidget {
@@ -25,11 +24,34 @@ class _SearchPageState extends State<SearchPage> {
   List<Property> topList =  List();
   var citiesList = ["Ahmedabad", "Mumbai", "Anand", "Delhi ", "Vadodara", "Chennai","Goa","Kolkata","Indore","Jaipur"];
   Image image1;
+  String docRef;
+  String isLoggedIn;
+  DocumentSnapshot docsSnap;
+
+  void getUserDetails() async{
+    //isLoggedIn= await LocalStorage.sharedInstance.loadAuthStatus(Constants.isLoggedIn);
+    docRef= await LocalStorage.sharedInstance.loadUserRef(Constants.userRef);
+    print('docRef :'+ docRef);
+    if(docRef != "NULL"){
+      Firestore.instance.document('/User/'+docRef).get().then((DocumentSnapshot docs) {
+        print("Doc found");
+        setState(() {
+          docsSnap = docs;  
+        });
+      });
+    }else{
+      setState((){docsSnap=null;});
+      print("Doc Not Exsist");
+    }
+  }
 
   @override
   void initState() {  
     // TODO: implement initState
     super.initState();
+    setState((){docsSnap=null;});
+    getUserDetails();
+    
     image1 = Image.asset("assets/drawer_design.png", gaplessPlayback: true);
 
     topList
@@ -38,7 +60,7 @@ class _SearchPageState extends State<SearchPage> {
     ..add(Property(propertyName:"Sangath Heights", propertyLocation:"Pune ", image:"feature_3.jpg", propertyPrice:"19000"))
     ..add(Property(propertyName:"Adani HighRise", propertyLocation:"Mumbai ", image:"hall_1.jpg", propertyPrice:"225000"))
     ..add(Property(propertyName:"N.G Tower", propertyLocation:"Gandhinagar ", image:"hall_2.jpeg", propertyPrice:"75000"));
-    
+
     recentList
     ..add(Property(propertyName:"Vishwas CityRise", propertyLocation:"Pune ", image:"hall_1.jpg", propertyPrice:"17500"))
     ..add(Property(propertyName:"Gift City", propertyLocation:"Ahmedabad ", image:"hall_2.jpeg", propertyPrice:"13500000"))
@@ -47,10 +69,11 @@ class _SearchPageState extends State<SearchPage> {
     ..add(Property(propertyName:"Sapath Hexa Tower", propertyLocation:"Ahmedabad", image:"feature_3.jpg", propertyPrice:"156000"));
   }
 
+  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     precacheImage(image1.image, context);
   }
 
@@ -80,7 +103,8 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
-      drawer: drawer(image1,context,'assets/profile.jpg','John Doe','johndoe@gmail.com'),
+      drawer: docsSnap != null ? drawer(image1,context,docsSnap.data['profileImage'],docsSnap.data['firstName']+" "+docsSnap.data['lastName'],docsSnap.data['email'],"true",'/User/'+docRef) 
+                              : drawer(image1,context,'assets/icons/avatar.png','Login / Register ','','false',null),
     );
   }
 
@@ -233,8 +257,9 @@ class _SearchPageState extends State<SearchPage> {
           },
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 30.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text("Which type of house",
                   style: TextStyle(
@@ -243,14 +268,16 @@ class _SearchPageState extends State<SearchPage> {
                       fontWeight: FontWeight.w900,
                       color: Colors.white
                     ),
+                    textAlign: TextAlign.center,
                   ),
-              Text("would you like to buy?",
+              Text("are you looking for?",
                 style: TextStyle(
                     fontFamily: 'Exo2',
                     fontSize: size.getWidthPx(24),
                     fontWeight: FontWeight.w900,
                     color: Colors.white
                     ),
+                    textAlign: TextAlign.center,
                   ),
             ],
           ),

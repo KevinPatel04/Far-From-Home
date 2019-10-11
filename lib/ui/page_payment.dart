@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farfromhome/utils/responsive_screen.dart';
 import 'package:farfromhome/utils/utils.dart';
+import 'package:farfromhome/widgets/invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -19,13 +21,14 @@ class _PaymentPageState extends State<PaymentPage> {
   DocumentSnapshot docsSnap;
   _PaymentPageState(this.docsSnap);
   static const platform = const MethodChannel("razorpay_flutter");
-  String _mobileNo;
-  String _name;
-  String _email;
-  String _propertyName;
+  String _mobileNo,_name,_email,_city,_propertyName;
   double _amount;
+  var _startDate, _lastDate;
   Screen size;
+  DateTime _sdate,_ldate;
   Razorpay _razorpay;
+  var owner;
+ 
   var _formKey = GlobalKey<FormState>();
   
   @override
@@ -45,10 +48,6 @@ class _PaymentPageState extends State<PaymentPage> {
           padding: EdgeInsets.all(size.getWidthPx(20)),
           child: ListView(
             children: <Widget>[
-              
-              SizedBox(
-                height: size.getWidthPx(10),
-              ),
                TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Name *', 
@@ -127,17 +126,101 @@ class _PaymentPageState extends State<PaymentPage> {
                TextFormField(
                  maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Address', 
+                  labelText: 'Address *', 
                   hintText: 'Enter Rented Property Address',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.home)
                 ),
+                validator: validateAddress,
                 onChanged: (value) {
                   setState(() {
                     _propertyName = value;
                   });
                 },
               ),
+              SizedBox(
+                height: size.getWidthPx(10),
+              ),
+               TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'City *', 
+                  hintText: 'Enter City',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(FontAwesomeIcons.mapMarkerAlt),
+                ),
+                validator: validateCity,
+                onChanged: (value) {
+                  setState(() {
+                    _city = value;
+                  });
+                },
+              ),
+              SizedBox(
+                height: size.getWidthPx(10),
+              ),
+              GestureDetector(
+                onTap: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2018),
+                    lastDate: DateTime(2025),
+                  ).then<DateTime>((DateTime value){
+                    if(value!=null && _lastDate==null){
+                      setState((){_startDate = new DateFormat('dd-MM-yyyy').format(value);_sdate=value;});
+                    }else if(value!=null && _lastDate!=null){
+                      (value.difference(_sdate).inSeconds < 0) ? setState((){_startDate = new DateFormat('dd-MM-yyyy').format(value);_sdate=value;})
+                       : Fluttertoast.showToast(msg: 'Start Date must be before  $_lastDate');
+                    }
+                  });
+                },
+                child:AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: _startDate == null ? 'Start Date *' : _startDate.toString(),
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(FontAwesomeIcons.calendarAlt),
+                    ),
+                    validator: (value){
+                      return _startDate==null ? 'Start date is required': null;
+                    },
+                  ),
+                )
+              ),
+              SizedBox(
+                height: size.getWidthPx(10),
+              ),
+              GestureDetector(
+                onTap: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2018),
+                    lastDate: DateTime(2025),
+                  ).then<DateTime>((DateTime value){
+                    if(value!=null && _startDate != null){
+                      (value.difference(_sdate).inSeconds > 0) ? setState((){_lastDate = new DateFormat('dd-MM-yyyy').format(value);_ldate=value;})
+                       : Fluttertoast.showToast(msg: 'Last Date must be after  $_startDate');
+                      //print('Date Time = $value');
+                    }else if(value!=null && _startDate==null){
+                      Fluttertoast.showToast(msg: 'Select Start Date');
+                    }
+                  });
+                },
+                child:AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: _lastDate==null ? 'Last Date *' : _lastDate.toString(),
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(FontAwesomeIcons.calendarAlt),
+                    ),
+                    validator: (value){
+                      return _lastDate==null ? 'Last date is required': null;
+                    },
+                  ),
+                )
+              ),
+
               SizedBox(
                 height: size.getWidthPx(10),
               ),
@@ -176,6 +259,22 @@ class _PaymentPageState extends State<PaymentPage> {
     final RegExp nameExp = new RegExp(r'^[A-Za-z ]+$');
     if (!nameExp.hasMatch(value))
       return 'Please enter only alphabetical characters.';
+    return null;
+  }
+
+  String validateAddress(String value) {
+    if (value.isEmpty) return 'Address is required.';
+    final RegExp nameExp = new RegExp(r'^[A-Za-z0-9-,./\\[\] ]+$');
+    if (!nameExp.hasMatch(value))
+      return 'Address can only contain [ 0-9 A-Z a-z . - \\ / ] only';
+    return null;
+  }
+
+  String validateCity(String value) {
+    if (value.isEmpty) return 'City is required.';
+    final RegExp nameExp = new RegExp(r'^[A-Za-z0-9-,./\\[\] ]+$');
+    if (!nameExp.hasMatch(value))
+      return 'City can contain [ 0-9 A-Z a-z . - \\ / ] only';
     return null;
   }
 
@@ -218,6 +317,13 @@ class _PaymentPageState extends State<PaymentPage> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    owner = {
+      'name': docsSnap['firstName']+' '+docsSnap['lastName'],
+      'mobileNo': docsSnap['mobileNo'],
+      'email': docsSnap['email'],
+      'address': docsSnap.data.containsKey('address') ? docsSnap['address'] : '',
+      'city': docsSnap.data.containsKey('city') ? docsSnap['city'] : '',
+    };
     //openCheckout();
   }
 
@@ -249,60 +355,67 @@ class _PaymentPageState extends State<PaymentPage> {
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     Fluttertoast.showToast(
         msg: "SUCCESS: " + response.paymentId, timeInSecForIos: 4);
-    Firestore.instance.collection('Payment').add({
+    var payment = {
       'dateCreated' : new DateTime.now(),
       'amount' : _amount,
       'status' : "SUCCESS",
       'ownerRef' : docsSnap.reference,
       'paymentID' : response.paymentId,
+      'mode' : 'CARD / NET BANKING',
+      'city' : _city,
       'propertyAddress' : _propertyName,
       'tenantContact' : "+91$_mobileNo",
       'tenantEmail' : _email,
       'tenantName' : _name,
-    });
-    
-    Timer(Duration(seconds: 4), () {
-        Navigator.pop(context);
-     });
+      'startDate' : _startDate,
+      'lastDate' : _lastDate,
+    };
+    Firestore.instance.collection('Payment').add(payment);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Invoice(payment,owner)));
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     Fluttertoast.showToast(
         msg: "ERROR: " + response.code.toString() + " - " + response.message,
         timeInSecForIos: 4);
-      Firestore.instance.collection('Payment').add({
+      var payment = {
       'dateCreated' : new DateTime.now(),
       'amount' : _amount,
       'status' : "ERROR",
       'ownerRef' : docsSnap.reference,
       'errorCode' : response.code.toString() + " - " + response.message,
       'propertyAddress' : _propertyName,
+      'city' : _city,
       'tenantContact' : "+91$_mobileNo",
       'tenantEmail' : _email,
       'tenantName' : _name,
-    });
-    Timer(Duration(seconds: 4), () {
-       Navigator.pop(context);
-    });
+      'startDate' : _startDate,
+      'lastDate' : _lastDate,
+    };
+    Firestore.instance.collection('Payment').add(payment);
+    //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Invoice(payment,owner)));
+    Navigator.pop(context);
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     Fluttertoast.showToast(
         msg: "EXTERNAL_WALLET: " + response.walletName, timeInSecForIos: 4);
-    
-    Firestore.instance.collection('Payment').add({
+    var payment = {
       'dateCreated' : new DateTime.now(),
       'amount' : _amount,
-      'status' : "SUCCESS WALLET",
+      'status' : "SUCCESS",
       'ownerRef' : docsSnap.reference,
-      'source' : response.walletName,
+      'mode' : 'WALLET '+response.walletName,
+      'city' : _city,
       'propertyAddress' : _propertyName,
       'tenantContact' : "+91$_mobileNo",
       'tenantEmail' : _email,
       'tenantName' : _name,
-    });
-     Timer(Duration(seconds: 4), () {
-        Navigator.pop(context);
-     });
+      'startDate' : _startDate,
+      'lastDate' : _lastDate,
+    };
+    Firestore.instance.collection('Payment').add(payment);
+    //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Invoice(payment,owner)));
+    Navigator.pop(context);
   }
 }

@@ -25,7 +25,6 @@ class LocalStorageBindings {
     Map<String, String> value = await storage.readAll();
     return value;
   }
-
 }
 
 class LocalStorage {
@@ -34,6 +33,22 @@ class LocalStorage {
 
   factory LocalStorage() {
     return sharedInstance;
+  }
+
+  Future<String> loadUserRef(String key) async{
+    return await localStorageBindings.readValue(key);
+  }
+
+  Future<dynamic> setUserRef({String key, dynamic value}) async {
+    localStorageBindings.writeValue(key: key, value: value);
+  }
+
+  Future<String> loadAuthStatus(String key) async{
+    return await localStorageBindings.readValue(key);
+  }
+
+  Future<dynamic> setAuthStatus({String key, dynamic value}) async {
+    localStorageBindings.writeValue(key: key, value: value);
   }
 
   LocalStorageBindings localStorageBindings = LocalStorageBindings();

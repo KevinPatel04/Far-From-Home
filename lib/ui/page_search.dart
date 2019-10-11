@@ -42,7 +42,6 @@ class _SearchResultPageState extends State<SearchResultPage> {
   @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
-
     return Scaffold(
       backgroundColor: backgroundColor,
       body: AnnotatedRegion(
@@ -56,7 +55,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                upperPart()
+                upperPart(),
               ],
             ),
           ),
@@ -64,6 +63,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
       ),
     );
   }
+
 
   Widget upperPart() {
     return Stack(

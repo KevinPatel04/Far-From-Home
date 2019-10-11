@@ -9,6 +9,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_search_bar/flutter_search_bar.dart';
 
 class Users extends StatefulWidget {
   @override
@@ -18,8 +19,34 @@ class Users extends StatefulWidget {
 
 class _UsersState extends State<Users> {
   bool _enabled = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Screen size;
-  _UsersState();
+  SearchBar searchBar;
+  
+  void onSubmitted(String value) {
+    setState(() => _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text('You wrote $value!'))));
+  }
+  
+  AppBar buildAppBar(BuildContext context) {
+    return new AppBar(
+        title: new Text('Search People'),
+        backgroundColor: Colors.blue[700],
+        actions: [searchBar.getSearchAction(context)]);
+  }
+  
+  _UsersState() {
+    searchBar = new SearchBar(
+        inBar: false,
+        buildDefaultAppBar: buildAppBar,
+        setState: setState,
+        onSubmitted: onSubmitted,
+        onClosed: () {
+          print("closed");
+        });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
@@ -27,21 +54,8 @@ class _UsersState extends State<Users> {
     FlutterStatusbarcolor.setStatusBarColor(Colors.blue[700]);
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Search People'),
-        backgroundColor: colorCurve,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              FontAwesomeIcons.search,
-              size: size.getWidthPx(18)
-            ),
-            onPressed: () async{
-              print("Search Tapped");
-            },
-          )
-        ],
-      ),
+      key: _scaffoldKey,
+      appBar: searchBar.build(context),
       body: StreamBuilder(
           stream: Firestore.instance.collection('User').snapshots(),
           builder: (context, snapshot) {
@@ -151,7 +165,7 @@ class _UsersState extends State<Users> {
                                         color: Colors.white,
                                       ),
                                       onPressed: () async {
-                                        var url = "tel:"+docsSnap['mobileNo'][0].toString();
+                                        var url = "tel:"+docsSnap['mobileNo'].toString();
                                         if (await canLaunch(url)) {
                                           await launch(url);
                                         } else {

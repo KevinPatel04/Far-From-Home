@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:farfromhome/utils/utils.dart';
 import 'package:farfromhome/utils/responsive_screen.dart';
@@ -63,18 +62,11 @@ class CustomSearchState extends State<CustomSearchPage> {
   //Value of the check box about shared Room false : not checked | true : checked 
   bool _shareRoom = false;
 
-
-
-
   void _search() {
 
     // Write Your code to create query and show result on page_search 
 
   }
-
-
-
-
 
   @override
   void initState() {  
@@ -154,6 +146,7 @@ class CustomSearchState extends State<CustomSearchPage> {
         selected: (_selectedIndex == index) ? true : false,
         label: Text(chipName),
         onSelected: (selected) {
+          FocusScope.of(context).requestFocus(new FocusNode());
           if (selected) {
             setState(() {
               _selectedIndex = index;
@@ -192,6 +185,7 @@ class CustomSearchState extends State<CustomSearchPage> {
           selected: (_selectedProperty.contains(index)) ? true : false,
           label: Text(chipName),
           onSelected: (selected) {
+            FocusScope.of(context).requestFocus(new FocusNode());
             if (selected) {
               setState(() {
                 _selectedProperty.add(index);
@@ -207,7 +201,6 @@ class CustomSearchState extends State<CustomSearchPage> {
     );
   }
 
-  
   Widget buildRoomChip() {
     return Container(
       height: size.hp(10.5),
@@ -228,6 +221,7 @@ class CustomSearchState extends State<CustomSearchPage> {
                     ),
                   ),
                   onPressed: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     setState(() {
                       if(_selectedRoom.contains("1RK")) {
                         _selectedRoom.remove("1RK");
@@ -255,6 +249,7 @@ class CustomSearchState extends State<CustomSearchPage> {
                     ),
                   ),
                   onPressed: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     setState(() {
                       if(_selectedRoom.contains("1BHK")) {
                         _selectedRoom.remove("1BHK");
@@ -282,6 +277,7 @@ class CustomSearchState extends State<CustomSearchPage> {
                     ),
                   ),
                   onPressed: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     setState(() {
                       if(_selectedRoom.contains("2BHK")) {
                         _selectedRoom.remove("2BHK");
@@ -313,6 +309,7 @@ class CustomSearchState extends State<CustomSearchPage> {
                     ),
                   ),
                   onPressed: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     setState(() {
                       if(_selectedRoom.contains("3BHK")) {
                         _selectedRoom.remove("3BHK");
@@ -340,6 +337,7 @@ class CustomSearchState extends State<CustomSearchPage> {
                     ),
                   ),
                   onPressed: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     setState(() {
                       if(_selectedRoom.contains("4BHK")) {
                         _selectedRoom.remove("4BHK");
@@ -367,6 +365,7 @@ class CustomSearchState extends State<CustomSearchPage> {
                     ),
                   ),
                   onPressed: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     setState(() {
                       if(_selectedRoom.contains("4+BHK")) {
                         _selectedRoom.remove("4+BHK");
@@ -434,7 +433,8 @@ class CustomSearchState extends State<CustomSearchPage> {
           return '$twoDecimals';
         },
         onChanged: (double newLowerValue, double newUpperValue) {
-        setState(() {
+          FocusScope.of(context).requestFocus(new FocusNode());
+          setState(() {
           _lowerValue = newLowerValue;
           _upperValue = newUpperValue;
           _upperValueFormatted = NumberFormat.compactCurrency(
@@ -465,14 +465,17 @@ class CustomSearchState extends State<CustomSearchPage> {
                 padding: EdgeInsets.all(size.getWidthPx(0)),
                 alignment: Alignment.center,
                 height: size.getWidthPx(40),
-                decoration:  BoxDecoration(
-                    color: Colors.grey.shade100,
+                decoration: BoxDecoration(
+                    color:  Colors.grey.shade100,
                     border:  Border.all(color: Colors.grey.shade400, width: 1.0),
-                    borderRadius:  BorderRadius.circular(8.0)),
-                child:  TextFormField(
+                    borderRadius:  BorderRadius.circular(8.0),
+                  ),
+                child: TextFormField(
                   style: TextStyle(fontFamily: 'Exo2'),
                   onChanged: (String val) {
-                    _locality =val;
+                    setState(() {
+                      _locality=val;
+                    });
                   },
                   decoration:  InputDecoration(
                       border: InputBorder.none,
@@ -482,7 +485,6 @@ class CustomSearchState extends State<CustomSearchPage> {
                         size: size.getWidthPx(22),
                       ),
                       hintText: 'Search by area or locality'),
-
                 ),
               )),
         ],
@@ -501,6 +503,7 @@ class CustomSearchState extends State<CustomSearchPage> {
         Checkbox(
           value: _shareRoom,
           onChanged: (bool value) {
+            FocusScope.of(context).requestFocus(new FocusNode());
                setState(() {
                   _shareRoom = value;
               });
@@ -525,6 +528,7 @@ class CustomSearchState extends State<CustomSearchPage> {
             ),
           ),
           onPressed: (){
+            FocusScope.of(context).requestFocus(new FocusNode());
             Fluttertoast.showToast(msg: "Searching");
             _search();
           },

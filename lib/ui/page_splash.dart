@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:farfromhome/ui/page_forgotpass.dart';
-import 'package:farfromhome/ui/page_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:farfromhome/ui/first_screen.dart';
 import 'package:farfromhome/utils/utils.dart';
@@ -8,9 +6,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:responsive_container/responsive_container.dart';
 import '../LocalBindings.dart';
 import 'page_home.dart';
-import 'page_login.dart';
 import 'page_onboarding.dart';
-
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -19,7 +15,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Screen size;
-
   @override
   void initState() {
     super.initState();
@@ -51,14 +46,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future navigateFromSplash () async {
-
     String isOnBoard = await LocalStorage.sharedInstance.readValue(Constants.isOnBoard);
-      print("isOnBoard  $isOnBoard");
-      if(isOnBoard ==null || isOnBoard == "0"){
-        //Navigate to OnBoarding Screen.
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OnBoardingPage()));
-      }else{
+    String isLoggedIn = await LocalStorage.sharedInstance.loadAuthStatus(Constants.isLoggedIn);
+    if(isOnBoard ==null || isOnBoard == "0"){
+      //Navigate to OnBoarding Screen.
+      LocalStorage.sharedInstance.setAuthStatus(key:Constants.isLoggedIn,value: "false");
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OnBoardingPage()));
+    }else{
+      if(isLoggedIn==null || isLoggedIn=="false"){
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FirstScreen()));
+      }else{
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> SearchPage()));
       }
+    }
   }
 }

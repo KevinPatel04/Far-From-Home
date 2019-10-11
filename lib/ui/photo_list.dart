@@ -1,24 +1,44 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farfromhome/utils/utils.dart' as prefix1;
 import 'package:flutter/material.dart';
 import 'package:farfromhome/model/models.dart';
 import 'package:farfromhome/services/services.dart';
 import 'package:farfromhome/utils/utils.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pdf/widgets.dart' as prefix0;
 
 class PhotosList extends StatefulWidget {
+  var docRef;
+  PhotosList(this.docRef);
   @override
-  _PhotosListState createState() => _PhotosListState();
+  _PhotosListState createState() => _PhotosListState(docRef);
 }
 
-class _PhotosListState extends State<PhotosList> implements ApiListener {
+class _PhotosListState extends State<PhotosList> {
   bool isLoading = true;
   bool internetCheck = true;
-  List<PhotoResponse> photoList= new List();
+  List<String> photoList= new List();
   Screen size;
-
+  var docsSnap,docRef;
+  _PhotosListState(this.docRef);
   @override
   void initState() {
     super.initState();
-    WebServices(this).getListOfPhotos(context);
+    getSnap();
+  }
+  
+  void getSnap() async{
+    var document = await Firestore.instance.document(docRef);
+      document.get().then((DocumentSnapshot doc) {
+          setState(() {
+            docsSnap = doc;
+            addImages();
+          });
+      });
+  }
+
+  void addImages(){
+    setState((){photoList=List.from(docsSnap['houseImages']);});
   }
 
   @override
@@ -37,13 +57,23 @@ class _PhotosListState extends State<PhotosList> implements ApiListener {
         itemCount: photoList.length,
         padding: EdgeInsets.only(top: size.getWidthPx(8)),
         itemBuilder: (BuildContext context, int index) => Container(
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(size.getWidthPx(8)),
-                  border: Border.all(color: hintTextColor),
-                  image: DecorationImage(
-                      image: NetworkImage(photoList[index].urls.small),
-                      fit: BoxFit.cover))),
+          child: GestureDetector(
+              child: Hero(
+                tag: 'Image View $index',
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(size.getWidthPx(8)),
+                      border: Border.all(color: hintTextColor),
+                      image: DecorationImage(
+                          image: NetworkImage(photoList[index]),
+                          fit: BoxFit.cover)
+                      ),
+                    ),
+                  ),
+              onTap: (){
+                _showImage(context,index);
+              },
+          ),
         ),
 
         staggeredTileBuilder: (int index) => StaggeredTile.count(1, index.isEven ? 1.5 : 1),
@@ -52,26 +82,30 @@ class _PhotosListState extends State<PhotosList> implements ApiListener {
       ),
     );
   }
-
-  @override
-  void onApiFailure(Exception exception) {
-    Utils.showAlert(context, "Photos", "Something went wrong.", () {
-      Navigator.pop(context);
-    }, true);
+  void _showImage(BuildContext context,int index){
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => Scaffold(
+          backgroundColor: backgroundColor.withOpacity(0.4),
+          appBar: AppBar(
+            backgroundColor: colorCurve,
+            elevation: 0,
+          ),
+          body: Center(
+            child: Hero(
+              tag: 'Image View $index',
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(photoList[index]),
+                    fit: BoxFit.fitWidth
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ),
+    );
   }
-
-  @override
-  void onApiSuccess(Object mObject) {
-    //Get All Users
-    if (mObject is List<PhotoResponse>) {
-      photoList.addAll(mObject);
-    }
-  }
-
-  @override
-  void onNoInternetConnection() {
-
-  }
-
-
 }
