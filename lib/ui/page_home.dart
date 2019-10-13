@@ -69,7 +69,9 @@ class _SearchPageState extends State<SearchPage> {
     ..add(Property(propertyName:"Sapath Hexa Tower", propertyLocation:"Ahmedabad", image:"feature_3.jpg", propertyPrice:"156000"));
   }
 
-  
+  void addTopList(){
+    final startAtTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.parse('2019-03-13 16:49:42.044').millisecondsSinceEpoch);
+  }
 
   @override
   void didChangeDependencies() {
@@ -157,7 +159,7 @@ class _SearchPageState extends State<SearchPage> {
                 for (int i = 0; i < recentList.length; i++)
                   propertyCard(recentList.toList()[i])
               ],
-            )
+            ),
           ],
         ),
       ],

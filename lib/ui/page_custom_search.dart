@@ -1,3 +1,4 @@
+import 'package:farfromhome/ui/page_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:farfromhome/utils/utils.dart';
@@ -63,9 +64,8 @@ class CustomSearchState extends State<CustomSearchPage> {
   bool _shareRoom = false;
 
   void _search() {
-
+    Navigator.push(context, MaterialPageRoute(builder: (_)=> SearchResultPage()));
     // Write Your code to create query and show result on page_search 
-
   }
 
   @override

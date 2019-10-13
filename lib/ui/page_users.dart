@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farfromhome/ui/page_payment.dart';
+import 'package:farfromhome/ui/page_profile.dart';
 import 'package:farfromhome/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -92,7 +93,8 @@ class _UsersState extends State<Users> {
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: (){
-              Fluttertoast.showToast(msg: "Card Tapped ${docsSnap['firstName']} ${docsSnap['lastName']}" );
+              Navigator.push(context, MaterialPageRoute(builder: (_)=> ProfilePage('/User/'+docsSnap.documentID,true)));
+              //Fluttertoast.showToast(msg: "Card Tapped ${docsSnap['firstName']} ${docsSnap['lastName']}" );
             },
             child: Container(
               width: size.wp(90),
@@ -204,16 +206,30 @@ class _UsersState extends State<Users> {
                                         color: Colors.white,
                                       ),
                                       onPressed: () async {
-                                        Fluttertoast.showToast(
-                                          msg: "Start Chatting with ${docsSnap['firstName']}",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIos: 1,
-                                          backgroundColor: Colors.black,
-                                          textColor: Colors.white,
-                                          fontSize: size.getWidthPx(15)
-                                        );
-                                      },
+                                      //   Fluttertoast.showToast(
+                                      //     msg: "Start Chatting with ${docsSnap['firstName']}",
+                                      //     toastLength: Toast.LENGTH_SHORT,
+                                      //     gravity: ToastGravity.BOTTOM,
+                                      //     timeInSecForIos: 1,
+                                      //     backgroundColor: Colors.black,
+                                      //     textColor: Colors.white,
+                                      //     fontSize: size.getWidthPx(15)
+                                      //   );
+                                      var url = "sms:"+docsSnap['mobileNo'].toString();
+                                        if (await canLaunch(url)) {
+                                          await launch(url);
+                                        } else {
+                                          Fluttertoast.showToast(
+                                            msg: "Can't Lauch Phone",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            timeInSecForIos: 1,
+                                            backgroundColor: Colors.black,
+                                            textColor: Colors.white,
+                                            fontSize: size.getWidthPx(15)
+                                          );
+                                        }
+                                      }
                                     ),
                                   ),
                                 ),

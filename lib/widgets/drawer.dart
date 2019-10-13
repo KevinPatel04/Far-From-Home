@@ -32,7 +32,7 @@ Widget drawer(img,context,_imageUrl,_name,_email,logStatus,docRef){
                 Positioned(
                   right: 5,
                   top: 0,
-                  child: logStatus == "true"? userProfile(_imageUrl,true) : userProfile(_imageUrl,false),
+                  child: logStatus == "true" && _imageUrl!=null ? userProfile(_imageUrl,true) : userProfile(_imageUrl,false),
                 ),
                 Positioned(
                   left: 5,
@@ -69,7 +69,32 @@ Widget drawer(img,context,_imageUrl,_name,_email,logStatus,docRef){
               color: colorCurve,
             ),
           ),
-          
+
+          // Search Property
+          ListTile(
+            title: Text(
+                "Search Property",
+                style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            leading: Builder(
+              builder: (BuildContext context) {
+                return Icon(
+                  FontAwesomeIcons.searchLocation,
+                  size: 20,
+                  color: Colors.deepOrangeAccent,
+                );
+              },
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => CustomSearchPage()));
+              // _uri
+            },
+          ),
+
           // Post Ad
           ListTile(
             title: Text(
@@ -90,9 +115,9 @@ Widget drawer(img,context,_imageUrl,_name,_email,logStatus,docRef){
             ),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pop(context);
               if(logStatus == "false"){
                 Fluttertoast.showToast(msg: 'Login / Signup is required');
+                Navigator.pop(context);
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => FirstScreen()));
               }else{
 
@@ -100,32 +125,6 @@ Widget drawer(img,context,_imageUrl,_name,_email,logStatus,docRef){
               // _uri
             },
           ),
-
-          // Search Property
-          ListTile(
-            title: Text(
-                "Search Property",
-                style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            leading: Builder(
-              builder: (BuildContext context) {
-                return Icon(
-                  FontAwesomeIcons.searchLocation,
-                  size: 20,
-                  color: Colors.blueGrey,
-                );
-              },
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => CustomSearchPage()));
-              // _uri
-            },
-          ),
-          
 
           // My Favrourites
           ListTile(
@@ -186,8 +185,38 @@ Widget drawer(img,context,_imageUrl,_name,_email,logStatus,docRef){
               }
             },
           ),
-          new Divider(color: Colors.black26),
+
           // Pay Rents
+          ListTile(
+            title: Text(
+                'Contact Users',
+                style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            leading: Builder(
+              builder: (BuildContext context) {
+                return Icon(
+                  FontAwesomeIcons.users,
+                  size: 20,
+                  color: Colors.deepPurpleAccent,
+                );
+              },
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              if(logStatus == "false"){
+                Fluttertoast.showToast(msg: 'Login / Signup is required');
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => FirstScreen()));
+              }else{
+                Navigator.push(context,MaterialPageRoute(builder: (_) => Users()));
+              // _uri
+              }
+            },
+          ),
+          new Divider(color: Colors.black26),
+          // Profile
           if(logStatus == "true")
           ListTile(
             title: Text(
@@ -208,7 +237,7 @@ Widget drawer(img,context,_imageUrl,_name,_email,logStatus,docRef){
             ),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context,MaterialPageRoute(builder: (_) => ProfilePage(docRef)));
+              Navigator.push(context,MaterialPageRoute(builder: (_) => ProfilePage(docRef,false)));
               // _uri
             },
           ),
@@ -294,7 +323,7 @@ Widget userProfile(_imagePath,val){
                   width: 70,
                 )
                 : Image.asset(
-                  _imagePath,    
+                  'assets/icons/avatar.png',
                   height: 70,
                   width: 70,
                 ),

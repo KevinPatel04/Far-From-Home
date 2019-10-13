@@ -39,6 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
       "email": _email,
       "uid" : _uid,
       "status" : true,
+      "Date Created" : DateTime.now(),
     };
     documentReference.setData(data).whenComplete(() {
       print("Data added");
@@ -61,13 +62,12 @@ class _SignUpPageState extends State<SignUpPage> {
         AuthResult user= await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
         print("signed in  ${user.user.uid}");
         _uid = user.user.uid;
-        Fluttertoast.showToast(msg: "Account Resgistered Successfully");
         try {
-          await user.user.sendEmailVerification();
+          //await user.user.sendEmailVerification();
           LocalStorage.sharedInstance.setAuthStatus(key:Constants.isLoggedIn,value: "true");
         } catch (e) {
           print("An error occured while trying to send email verification");
-          Fluttertoast.showToast(msg: e.code);
+          
         }
 
         _add();
@@ -79,14 +79,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.documents[0].documentID);
                 }
         );
-
+        Fluttertoast.showToast(msg: "Account Resgistered Successfully");
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => SearchPage()));
 
 
       }
       catch(e){
-        print("error : $e");
+        //print("error : $e");
+        Fluttertoast.showToast(msg: e.code);
       }
     }
   }

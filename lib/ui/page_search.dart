@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farfromhome/ui/page_houe_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:farfromhome/model/models.dart';
 import 'package:farfromhome/utils/utils.dart';
@@ -25,18 +28,6 @@ class _SearchResultPageState extends State<SearchResultPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    premiumList
-    ..add(Property(propertyName:"Omkar Lotus", propertyLocation:"Ahmedabad ", image:"feature_1.jpg", propertyPrice:"26000"))
-    ..add(Property(propertyName:"Sandesh Heights", propertyLocation:"Baroda ", image:"feature_2.jpg", propertyPrice:"11500"))
-    ..add(Property(propertyName:"Sangath Heights", propertyLocation:"Pune ", image:"feature_3.jpg", propertyPrice:"19000"))
-    ..add(Property(propertyName:"Adani HighRise", propertyLocation:"Mumbai ", image:"hall_1.jpg", propertyPrice:"225000"))
-    ..add(Property(propertyName:"N.G Tower", propertyLocation:"Gandhinagar ", image:"hall_2.jpeg", propertyPrice:"75000"))
-    ..add(Property(propertyName:"Vishwas CityRise", propertyLocation:"Pune ", image:"hall_1.jpg", propertyPrice:"17500"))
-    ..add(Property(propertyName:"Gift City", propertyLocation:"Ahmedabad ", image:"hall_2.jpeg", propertyPrice:"13500000"))
-    ..add(Property(propertyName:"Velone City", propertyLocation:"Mumbai ", image:"feature_1.jpg", propertyPrice:"11500000"))
-    ..add(Property(propertyName:"PabelBay", propertyLocation:"Ahmedabad ", image:"hall_1.jpg", propertyPrice:"33000000"))
-    ..add(Property(propertyName:"Sapath Hexa Tower", propertyLocation:"Ahmedabad", image:"feature_3.jpg", propertyPrice:"156000"));
   }
 
   @override
@@ -44,22 +35,35 @@ class _SearchResultPageState extends State<SearchResultPage> {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: AnnotatedRegion(
-        value: SystemUiOverlayStyle(
-            statusBarColor: backgroundColor,
-            statusBarBrightness: Brightness.dark,
-            statusBarIconBrightness: Brightness.dark,
-            systemNavigationBarIconBrightness: Brightness.dark,
-            systemNavigationBarColor: backgroundColor),
-        child: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                upperPart(),
-              ],
+      appBar: AppBar(
+        backgroundColor: Colors.blue[700],
+        title: Text('Search Results'),
+      ),
+      body: StreamBuilder(
+          stream: Firestore.instance.collection('House').snapshots(),
+          builder: (context, snapshot) {
+            return (snapshot.connectionState == null )
+          ? new Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.blue[700],
             ),
-          ),
-        ),
+          )
+          : Container(
+            padding: new EdgeInsets.symmetric(horizontal: 10,vertical: 16),
+            child: ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot docsSnap = snapshot.data.documents[index];
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    getCard(docsSnap, context,index),
+                  ],
+                );
+              },
+            ),
+          );
+        }
       ),
     );
   }
@@ -91,17 +95,176 @@ class _SearchResultPageState extends State<SearchResultPage> {
                 ],
               ),
             ),
-            searchResult(),
+            //searchResult(),
+            
           ],
         ),
       ],
     );
   }
 
-  Widget searchResult(){
-    return Center(
-      child: Text('House List will Comet here'),
-    );
+  List<bool> _isPressed = List<bool>();
+
+   Widget getCard(DocumentSnapshot docsSnap,var context,index){
+     _isPressed.add(false);
+        return Column(
+              children: <Widget>[
+                      Stack(
+                            children: <Widget>[
+                              ResponsiveContainer(
+                                widthPercent: 90,
+                                heightPercent: 35,
+                                child: Card(
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: InkWell(
+                                    onTap: (){
+                                      // Navigate
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => HouseDetail(docsSnap),
+                                        ),
+                                      );
+                                    },
+                                    child: Column(
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10)),
+                                          child: Container(
+                                            width: MediaQuery.of(context).size.width*0.90,
+                                            height: MediaQuery.of(context).size.height*0.25,
+                                            color: Colors.grey,
+                                            child: Image.network(
+                                              '${docsSnap['houseImages'][0]}',
+                                              fit: BoxFit.fill
+                                            ),
+                                          ),
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            ResponsiveContainer(
+                                              widthPercent: 23,
+                                              heightPercent: 9,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10)),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      right: BorderSide( 
+                                                        color: Colors.grey,
+                                                        width: 1.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: Align(
+                                                    alignment: Alignment.center,
+                                                    child: Text('${docsSnap['builtUpArea']} Sq.ft.')
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            ResponsiveContainer(
+                                              widthPercent: 41,
+                                              heightPercent: 9,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                      right: BorderSide( 
+                                                        color: Colors.grey,
+                                                        width: 1.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      SizedBox(
+                                                        height: 20,
+                                                      ),
+                                                      Align(
+                                                        child: Text('${docsSnap['Overview']['room']} BHK in ${docsSnap['Address']['city']}')
+                                                      ),
+                                                      Align(
+                                                        child: Text('${docsSnap['Overview']['furnishingStatus']}')
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ),
+                                            ),
+                                            ResponsiveContainer(
+                                              widthPercent: 23,
+                                              heightPercent: 9,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.only(bottomRight: Radius.circular(10)),
+                                                child: Container(
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      SizedBox(
+                                                        height: 20,
+                                                      ),
+                                                      Align(
+                                                        alignment: Alignment.center,
+                                                        child: Text('${docsSnap['monthlyRent']}'),
+                                                      ),
+                                                      Align(
+                                                        alignment: Alignment.center,
+                                                        child: Text('Rs. / month'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ) 
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                            right: 20,
+                            top: 20,
+                            child: Center(
+                                child: ClipOval(
+                                    child: Container(
+                                      width: 40.0,
+                                      height: 40.0,
+                                      color: Colors.white,
+                                      child: new RawMaterialButton(
+                                        elevation: 10.0,
+                                        child: new Icon(
+                                          Icons.favorite,
+                                          color:_isPressed[index] ? Colors.blue[700] : Colors.grey,
+                                    ),
+                                  onPressed: (){
+                                      setState(() {
+                                        _isPressed[index] = !_isPressed[index];
+                                      });
+                                      
+                                    Fluttertoast.showToast(
+                                        msg: (_isPressed[index]) ? "${docsSnap['Address']['society']} Added to Favorites" : "Removed from Favorites",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIos: 1,
+                                        backgroundColor: Colors.black,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0
+                                    );
+                                  },
+                                ),
+                              ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      SizedBox(
+        height: 10.0,
+      ),
+    ]);
   }
 
   Widget titleWidget() {
@@ -273,3 +436,4 @@ class _SearchResultPageState extends State<SearchResultPage> {
     );
   }
 }
+
