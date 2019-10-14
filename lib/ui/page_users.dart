@@ -89,7 +89,8 @@ class _UsersState extends State<Users> {
     return Container(
       margin: new EdgeInsets.only(bottom: size.getWidthPx(10)),
       child: new Card(
-        elevation: 6,
+        elevation: 4,
+        borderOnForeground: true,
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: (){

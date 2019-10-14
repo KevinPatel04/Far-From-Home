@@ -1,29 +1,31 @@
 import 'dart:io';
 import 'dart:core';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farfromhome/ui/page_house_detail.dart';
+import 'package:farfromhome/utils/utils.dart' as prefix0;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:multi_image_picker/src/asset.dart';
 
-class AddImages extends StatelessWidget{
-  var origin;
+var _status=true;
+var _uploadStatus = false;
+var _isImageSelected=false;
 
-  AddImages({this.origin});
-   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Add House Images',
-      theme: ThemeData(brightness: Brightness.light),
-      home: MultiImage(),
-    );
-  }
-}
+// class AddImages extends StatelessWidget{
 
-class MultiImage extends StatefulWidget {
-  @override
-  _MultiImageState createState() => new _MultiImageState();
-}
+//   var path;
+//   AddImages(this.path);
+//    @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Add House Images',
+//       theme: ThemeData(brightness: Brightness.light),
+//       home: MultiImage(path),
+//     );
+//   }
+// }
 
 class Choice {
   const Choice({this.title, this.icon});
@@ -34,6 +36,7 @@ class Choice {
 
 const List<Choice> choices = const <Choice>[
   const Choice(title: 'Upload', icon: Icons.cloud_upload),
+  const Choice(title: 'Post House Deal', icon: Icons.check)
 ];
 
 class ChoiceCard extends StatelessWidget {
@@ -60,14 +63,25 @@ class ChoiceCard extends StatelessWidget {
   }
 }
 
+class MultiImage extends StatefulWidget {
+  var path,docSnap;
+  MultiImage(this.path,this.docSnap);
+  @override
+  _MultiImageState createState() => new _MultiImageState(path,docSnap);
+}
+
 class _MultiImageState extends State<MultiImage> {
     List<Asset> images = List<Asset>();
     List <String> imagePaths = List<String>();
    String _error = 'No Error Dectected';
-
+   var path,docSnap;
+    _MultiImageState(this.path,this.docSnap);
    @override
    void initState() {
      super.initState();
+    _status=true;
+    _uploadStatus = false;
+    _isImageSelected=false;
    }
 
   String filePath;
@@ -85,25 +99,38 @@ class _MultiImageState extends State<MultiImage> {
     );
   }
 
-  var imageDataPath = { };
-  int i=0;
+  List<String> imageDataPath = <String>[];
+  int i=0,len;
   Future<Null> _addImages(var pic) async {
       var t = await pic.filePath;
       File file=new File(t);
       filePath = '${DateTime.now()}.png';
-      StorageReference ref = FirebaseStorage(storageBucket: 'gs://far-from-home-5a40e.appspot.com').ref().child(filePath); 
+      StorageReference ref = FirebaseStorage(storageBucket: 'gs://farfromhome-2019.appspot.com/').ref().child(filePath); 
       StorageUploadTask task = ref.putFile(file);
       StorageTaskSnapshot storageTaskSnapshot = await task.onComplete;
       String url = await storageTaskSnapshot.ref.getDownloadURL();
       
       //print("\nUploaded: "+url);
-      //Download URL's
-      imageDataPath['image${i + 1}'] = url;
-      i++;
+      //Download URL's 
+      setState((){
+        imageDataPath.add(url);
+        i++;
+      });
+      if(len==i){
+        setState(() {
+          _status=!_status;
+          _uploadStatus=!_uploadStatus;
+          print('Upload State Changed');
+        });
+      }
   }
 
   //Uploading images
   Future<Null> _uploadImages(){
+    setState(() {
+      len = images.length;
+      _uploadStatus=!_uploadStatus;
+    });
     images.forEach((pic) {
       _addImages(pic);
     });
@@ -130,7 +157,16 @@ class _MultiImageState extends State<MultiImage> {
 
       for (var r in resultList) {
         var t = await r.filePath;
-        print(t);
+        //print(t);
+      }
+      if(resultList.isNotEmpty){
+        setState(() {
+          _isImageSelected = true;
+        });
+      }else{
+        setState(() {
+          _isImageSelected = false;
+        });
       }
     } on Exception catch (e) {
       error = e.toString();
@@ -146,38 +182,51 @@ class _MultiImageState extends State<MultiImage> {
       _error = error;
     });
   }
-
+  var complete=0;
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       home: new Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
            title: Text("Add House Images"),
            backgroundColor: Colors.blue[700],
-           actions: <Widget>[
+           actions: _isImageSelected ? <Widget>[
               // action button
-              IconButton(
+              _status ? IconButton(
                 icon: Icon(choices[0].icon),
                 onPressed: () {
                   _uploadImages();
                 },
+              )
+              : IconButton(
+                icon: Icon(choices[1].icon),
+                onPressed: () {
+                  print('Saved');
+                  Firestore.instance.collection('House').document(path).updateData({
+                    'ReviewImage' : FieldValue.arrayUnion(imageDataPath) ,
+                  }).whenComplete((){
+                      print('Data Upload Complete');
+                      Navigator.pushReplacement(context,MaterialPageRoute(builder: (_)=> HouseDetail(docSnap)));
+                  });
+                },
               ),
-           ]
+           ] : null,
          ),
-        body: new Column( 
+        body: _uploadStatus ? Center(child:new CircularProgressIndicator()) : new Column( 
           children: <Widget>[
             Expanded(
               child: buildGridView(),
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: _status ? FloatingActionButton(
         onPressed: () {
           loadAssets();
         },
         child: Icon(Icons.add_a_photo),
         backgroundColor: Colors.blue[700],
-      ),
+      ): null,
       ),
     );
   }

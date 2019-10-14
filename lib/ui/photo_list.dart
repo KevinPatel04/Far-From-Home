@@ -28,7 +28,7 @@ class _PhotosListState extends State<PhotosList> {
   }
   
   void getSnap() async{
-    var document = await Firestore.instance.document(docRef);
+    var document = await Firestore.instance.document('/House/'+docRef);
       document.get().then((DocumentSnapshot doc) {
           setState(() {
             docsSnap = doc;
@@ -38,7 +38,7 @@ class _PhotosListState extends State<PhotosList> {
   }
 
   void addImages(){
-    setState((){photoList=List.from(docsSnap['houseImages']);});
+    setState((){photoList=List.from(docsSnap['ReviewImage']);});
   }
 
   @override
@@ -56,7 +56,8 @@ class _PhotosListState extends State<PhotosList> {
         shrinkWrap: true,
         itemCount: photoList.length,
         padding: EdgeInsets.only(top: size.getWidthPx(8)),
-        itemBuilder: (BuildContext context, int index) => Container(
+        itemBuilder: (BuildContext context, int index){
+          return Container(
           child: GestureDetector(
               child: Hero(
                 tag: 'Image View $index',
@@ -74,7 +75,8 @@ class _PhotosListState extends State<PhotosList> {
                 _showImage(context,index);
               },
           ),
-        ),
+        );
+      },
 
         staggeredTileBuilder: (int index) => StaggeredTile.count(1, index.isEven ? 1.5 : 1),
         mainAxisSpacing: size.getWidthPx(4),
@@ -86,9 +88,10 @@ class _PhotosListState extends State<PhotosList> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) => Scaffold(
-          backgroundColor: backgroundColor.withOpacity(0.4),
+          backgroundColor: prefix1.backgroundColor,
           appBar: AppBar(
-            backgroundColor: colorCurve,
+            backgroundColor: prefix1.colorCurve,
+            title: Text(docsSnap['Address']['society']),
             elevation: 0,
           ),
           body: Center(
