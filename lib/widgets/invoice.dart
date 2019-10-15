@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui' as ui;
 import 'package:farfromhome/ui/page_home.dart';
 import 'package:farfromhome/utils/utils.dart';
 import 'package:flutter/material.dart';

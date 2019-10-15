@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farfromhome/LocalBindings.dart';
+import 'package:farfromhome/ui/page_add_house.dart';
 import 'package:farfromhome/ui/page_custom_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,9 +70,9 @@ class _SearchPageState extends State<SearchPage> {
     ..add(Property(propertyName:"Sapath Hexa Tower", propertyLocation:"Ahmedabad", image:"feature_3.jpg", propertyPrice:"156000"));
   }
 
-  void addTopList(){
-    final startAtTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.parse('2019-03-13 16:49:42.044').millisecondsSinceEpoch);
-  }
+  // void addTopList(){
+  //   final startAtTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.parse('2019-03-13 16:49:42.044').millisecondsSinceEpoch);
+  // }
 
   @override
   void didChangeDependencies() {
@@ -232,6 +233,7 @@ class _SearchPageState extends State<SearchPage> {
                         colorBrightness: Brightness.dark,
                         child: Text('Post free property ad'),
                         onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (_)=> AddHouse(docRef)));
                           print('Add House');
                         },
                       ),

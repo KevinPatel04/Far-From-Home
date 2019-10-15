@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:farfromhome/utils/utils.dart' as prefix1;
 import 'package:flutter/material.dart';
-import 'package:farfromhome/model/models.dart';
-import 'package:farfromhome/services/services.dart';
 import 'package:farfromhome/utils/utils.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:pdf/widgets.dart' as prefix0;
 
 class PhotosList extends StatefulWidget {
   var docRef;
@@ -88,9 +84,9 @@ class _PhotosListState extends State<PhotosList> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) => Scaffold(
-          backgroundColor: prefix1.backgroundColor,
+          backgroundColor: backgroundColor,
           appBar: AppBar(
-            backgroundColor: prefix1.colorCurve,
+            backgroundColor: colorCurve,
             title: Text(docsSnap['Address']['society']),
             elevation: 0,
           ),

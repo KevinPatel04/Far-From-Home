@@ -1,3 +1,4 @@
+import 'package:farfromhome/LocalBindings.dart';
 import 'package:farfromhome/ui/page_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -63,8 +64,9 @@ class CustomSearchState extends State<CustomSearchPage> {
   //Value of the check box about shared Room false : not checked | true : checked 
   bool _shareRoom = false;
 
-  void _search() {
-    Navigator.push(context, MaterialPageRoute(builder: (_)=> SearchResultPage()));
+  void _search() async{
+    var userRef= await LocalStorage.sharedInstance.loadUserRef(Constants.userRef);
+    Navigator.push(context, MaterialPageRoute(builder: (_)=> SearchResultPage(userRef)));
     // Write Your code to create query and show result on page_search 
   }
 
@@ -515,27 +517,30 @@ class CustomSearchState extends State<CustomSearchPage> {
   }
 
   Widget getSubmitButton() {
-    return Container(
-        margin: EdgeInsets.only(bottom: size.hp(3)),
-        color: colorCurve,
-        child: FlatButton(
-          child: Text(
-            "SEARCH",
-            style: TextStyle(
-              fontFamily: 'Exo2',
-              color: backgroundColor,
-              fontSize: size.getWidthPx(20)
+    return ClipRRect(
+          borderRadius: BorderRadius.circular(size.getWidthPx(5)),
+          child: Container(
+          //margin: EdgeInsets.only(bottom: size.hp(3)),
+          color: colorCurve,
+          child: FlatButton(
+            child: Text(
+              "SEARCH",
+              style: TextStyle(
+                fontFamily: 'Exo2',
+                color: Colors.white,
+                fontSize: size.getWidthPx(20)
+              ),
             ),
+            onPressed: (){
+              FocusScope.of(context).requestFocus(new FocusNode());
+              Fluttertoast.showToast(msg: "Searching");
+              _search();
+            },
           ),
-          onPressed: (){
-            FocusScope.of(context).requestFocus(new FocusNode());
-            Fluttertoast.showToast(msg: "Searching");
-            _search();
-          },
+          width: size.wp(78),
+          height: size.hp(8),
         ),
-        width: size.wp(78),
-        height: size.hp(8),
-      );
+    );
   }
 
   Card preferenceUpperBoxCard() {
@@ -619,6 +624,9 @@ class CustomSearchState extends State<CustomSearchPage> {
               getSharedRoomCheck(),
               SizedBox(height: size.hp(5),),
               getSubmitButton(),
+              SizedBox(
+                height: size.hp(3),
+              )
             ],
           ),
         )

@@ -52,7 +52,7 @@ class AboutDevelopers extends StatelessWidget{
                 SizedBox(
                   height: size.getWidthPx(10),
                 ),
-                getDevCard(context, 'https://github.com/MeetR18', 'Meet Ramaiya', 'linkedin/meet', 'Flutter Developer', 'mailto:17ce090@charusat.edu.in', 'assets/developers/meet.jpg'),
+                getDevCard(context, 'https://github.com/MeetR18', 'Meet Ramaiya', 'https://www.linkedin.com/in/meet-ramaiya-098528168', 'Flutter Developer', 'mailto:17ce090@charusat.edu.in', 'assets/developers/meet.jpg'),
                 SizedBox(
                   height: size.getWidthPx(10),
                 ),
@@ -60,7 +60,7 @@ class AboutDevelopers extends StatelessWidget{
                 SizedBox(
                   height: size.getWidthPx(10),
                 ),
-                getDevCard(context, 'https://github.com/namrata1310', 'Namrata Patel', 'linkedin/namrata', 'QA & Tester', 'mailto:17ce078@charusat.edu.in', 'assets/developers/namrata.jpg'),
+                getDevCard(context, 'https://github.com/namrata1310', 'Namrata Patel', 'linkedin/namrata', 'QA & Tester', 'mailto:17ce078@charusat.edu.in', 'assets/developers/namrata.png'),
                 SizedBox(
                   height: size.getWidthPx(10),
                 ),

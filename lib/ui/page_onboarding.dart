@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:farfromhome/ui/page_login.dart';
 import 'package:farfromhome/ui/page_splash.dart';
 import 'package:farfromhome/utils/Constants.dart';
 import 'package:farfromhome/widgets/dots_indicator.dart';

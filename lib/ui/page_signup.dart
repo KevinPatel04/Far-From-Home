@@ -63,15 +63,12 @@ class _SignUpPageState extends State<SignUpPage> {
         print("signed in  ${user.user.uid}");
         _uid = user.user.uid;
         try {
-          //await user.user.sendEmailVerification();
-          LocalStorage.sharedInstance.setAuthStatus(key:Constants.isLoggedIn,value: "true");
+          LocalStorage.sharedInstance
+            .setAuthStatus(key: Constants.isLoggedIn, value: "true");
         } catch (e) {
           print("An error occured while trying to send email verification");
-          
         }
-
         _add();
-        
         Firestore.instance.collection('User').where('uid', isEqualTo: _uid)
           .snapshots().listen(
                 (data) {
@@ -80,6 +77,13 @@ class _SignUpPageState extends State<SignUpPage> {
                 }
         );
         Fluttertoast.showToast(msg: "Account Resgistered Successfully");
+        Firestore.instance.collection('User').where('uid', isEqualTo: user.user.uid)
+          .snapshots().listen(
+                (data) {
+                  print('Docfound :  ${data.documents[0].documentID}');
+                  LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.documents[0].documentID.toString());
+                }
+          );
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => SearchPage()));
 

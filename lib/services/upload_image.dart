@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:core';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farfromhome/ui/page_house_detail.dart';
-import 'package:farfromhome/utils/utils.dart' as prefix0;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:multi_image_picker/multi_image_picker.dart';

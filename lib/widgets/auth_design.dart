@@ -1,4 +1,3 @@
-import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 

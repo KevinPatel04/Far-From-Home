@@ -1,16 +1,14 @@
 import 'package:farfromhome/LocalBindings.dart';
 import 'package:farfromhome/ui/about_developers.dart';
 import 'package:farfromhome/ui/first_screen.dart';
+import 'package:farfromhome/ui/page_add_house.dart';
 import 'package:farfromhome/ui/page_custom_search.dart';
 import 'package:farfromhome/ui/page_login.dart';
 import 'package:farfromhome/ui/page_profile.dart';
 import 'package:farfromhome/ui/page_splash.dart';
 import 'package:farfromhome/ui/page_users.dart';
 import 'package:farfromhome/utils/utils.dart';
-import 'package:farfromhome/widgets/auth_design.dart';
-import 'package:farfromhome/widgets/invoice.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -120,7 +118,7 @@ Widget drawer(img,context,_imageUrl,_name,_email,logStatus,docRef){
                 Navigator.pop(context);
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => FirstScreen()));
               }else{
-
+                Navigator.push(context,MaterialPageRoute(builder: (_)=>AddHouse(docRef)));
               }
               // _uri
             },

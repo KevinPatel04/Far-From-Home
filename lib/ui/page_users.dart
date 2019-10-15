@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farfromhome/ui/page_payment.dart';
 import 'package:farfromhome/ui/page_profile.dart';
-import 'package:farfromhome/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:farfromhome/utils/responsive_screen.dart';

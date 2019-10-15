@@ -1,17 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farfromhome/ui/page_house_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:farfromhome/model/models.dart';
 import 'package:farfromhome/utils/utils.dart';
-import 'package:farfromhome/utils/utils.dart' as prefix0;
 import 'package:farfromhome/widgets/widgets.dart';
 import 'package:responsive_container/responsive_container.dart';
-import 'package:intl/intl.dart';
-
+var userRef;
 class SearchResultPage extends StatefulWidget {
+  SearchResultPage(u){
+    userRef=u;
+  }
   @override
   _SearchResultPageState createState() => _SearchResultPageState();
 }
@@ -19,7 +18,7 @@ class SearchResultPage extends StatefulWidget {
 class _SearchResultPageState extends State<SearchResultPage> {
   Screen size;
   int _selectedIndex = 0;
-
+  String user;
   List<Property> premiumList =  List();
   List<Property> featuredList =  List();
   var citiesList = ["Ahmedabad", "Mumbai", "Delhi ", "Chennai","Goa","Kolkata","Indore","Jaipur"];
@@ -30,12 +29,12 @@ class _SearchResultPageState extends State<SearchResultPage> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: backgroundColor,
-      
       body: StreamBuilder(
           stream: Firestore.instance.collection('House').snapshots(),
           builder: (context, snapshot) {
@@ -46,8 +45,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
             ),
           )
           : Container(
-            child: 
-                ListView.builder(
+            child: ListView.builder(
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (context, index) {
                     DocumentSnapshot docsSnap = snapshot.data.documents[index];
@@ -58,7 +56,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         index == 0 ? SizedBox(height: 10,):SizedBox(height: 0),
                         Container(
                           padding: new EdgeInsets.symmetric(horizontal: 10),
-                          child: getCard(docsSnap, context,index)
+                          child: getCard(docsSnap,context,index,userRef)
                         ),
                       ],
                     );
@@ -69,7 +67,6 @@ class _SearchResultPageState extends State<SearchResultPage> {
       ),
     );
   }
-
 
   Widget upperPart() {
     return Stack(
@@ -106,9 +103,10 @@ class _SearchResultPageState extends State<SearchResultPage> {
   }
 
   List<bool> _isPressed = List<bool>();
-
-   Widget getCard(DocumentSnapshot docsSnap,var context,index){
-     _isPressed.add(false);
+    
+   Widget getCard(DocumentSnapshot docsSnap,var context,index,var userReference){
+        //setStatus(snapshot);
+        _isPressed.add(false);
         return Column(
               children: <Widget>[
                       Stack(
@@ -225,40 +223,62 @@ class _SearchResultPageState extends State<SearchResultPage> {
                                 ),
                               ),
                               Positioned(
-                            right: 20,
-                            top: 20,
-                            child: Center(
-                                child: ClipOval(
-                                    child: Container(
-                                      width: 40.0,
-                                      height: 40.0,
-                                      color: Colors.white,
-                                      child: new RawMaterialButton(
-                                        elevation: 10.0,
-                                        child: new Icon(
-                                          Icons.favorite,
-                                          color:_isPressed[index] ? Colors.blue[700] : Colors.grey,
+                                    right: 20,
+                                    top: 20,
+                                    child: Center(
+                                      child: ClipOval(
+                                        child: Container(
+                                          width: 40.0,
+                                          height: 40.0,
+                                          color: Colors.white,
+                                          child: new RawMaterialButton(
+                                            elevation: 10.0,
+                                            child: new Icon(
+                                              Icons.favorite,
+                                              color: _isPressed[index] ? Colors.blue[700] : Colors.grey,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                _isPressed[index] = !_isPressed[index];
+                                              });
+                                              if(_isPressed[index]){
+                                                Firestore.instance.runTransaction((transaction) async{
+                                                docsSnap = await transaction.get(docsSnap.reference);
+                                                await transaction.update(docsSnap.reference,{
+                                                  'favourite': docsSnap['favourite']+1,
+                                                });
+                                                });
+                                                Firestore.instance.document(userReference).updateData({
+                                                  'FavouriteHouse':FieldValue.arrayUnion(['/House/'+docsSnap.documentID])
+                                                });
+                                              } else{
+                                                Firestore.instance.runTransaction((transaction) async{
+                                                  docsSnap = await transaction.get(docsSnap.reference);
+                                                  await transaction.update(docsSnap.reference,{
+                                                    'favourite': docsSnap['favourite']-1,
+                                                  });
+                                                });
+                                                Firestore.instance.document(userReference).updateData({
+                                                  'FavouriteHouse':FieldValue.arrayRemove(['/House/'+docsSnap.documentID])
+                                                });
+                                              }
+                                              Fluttertoast.showToast(
+                                                  msg: (_isPressed[index])
+                                                      ? "${docsSnap['Address']['society']} Added to Favorites"
+                                                      : "Removed from Favorites",
+                                                  toastLength: Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIos: 1,
+                                                  backgroundColor: Colors.black,
+                                                  textColor: Colors.white,
+                                                  fontSize: 16.0
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  onPressed: (){
-                                      setState(() {
-                                        _isPressed[index] = !_isPressed[index];
-                                      });
-                                      
-                                    Fluttertoast.showToast(
-                                        msg: (_isPressed[index]) ? "${docsSnap['Address']['society']} Added to Favorites" : "Removed from Favorites",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIos: 1,
-                                        backgroundColor: Colors.black,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0
-                                    );
-                                  },
-                                ),
-                              ),
-              ),
-            ),
-          ),
+                                  )
         ],
       ),
       SizedBox(

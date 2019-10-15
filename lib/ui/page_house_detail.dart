@@ -1,28 +1,26 @@
+import 'package:farfromhome/LocalBindings.dart';
 import 'package:farfromhome/services/upload_image.dart';
 import 'package:farfromhome/ui/page_profile.dart';
 import 'package:farfromhome/ui/photo_list.dart';
+import 'package:farfromhome/utils/Constants.dart';
 import 'package:farfromhome/utils/responsive_screen.dart';
+import 'package:farfromhome/widgets/utils_widget.dart';
 import 'package:flutter/widgets.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:farfromhome/services/network_image.dart';
-import 'package:pdf/widgets.dart' as prefix0;
+import 'package:intl/intl.dart';
 import 'package:responsive_container/responsive_container.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'page_payment.dart';
+import 'package:farfromhome/ui/page_payment.dart';
 
 final String headImageAssetPath = "";
 final List<String> imgList = [];
-
+var userReference;
 final Widget placeholder = Container(color: Colors.grey);
 List<T> map<T>(List list, Function handler) {
   List<T> result = [];
@@ -72,7 +70,7 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
   }
 }
 
-DocumentSnapshot ownerSnapshot=null;
+DocumentSnapshot ownerSnapshot;
 
 class HouseDetail extends StatefulWidget {
   // Declare a field that holds the Todo.
@@ -81,14 +79,12 @@ class HouseDetail extends StatefulWidget {
   @override
   _HouseDetailState createState() => _HouseDetailState(snapshot);
 }
-DocumentSnapshot snapshot;
-class _HouseDetailState extends State<HouseDetail> {
-  
-  _HouseDetailState(snap){
-      snapshot = snap;
-  }
 
-  bool _isPressed = false;
+class _HouseDetailState extends State<HouseDetail> {
+DocumentSnapshot snapshot;  
+  _HouseDetailState(this.snapshot);
+
+  bool _isPressed = false,_fireStatus=false;
 
   @override
   void initState() {
@@ -97,15 +93,29 @@ class _HouseDetailState extends State<HouseDetail> {
   }
 
   void ownerDetail() async {
+    print('OwnerDetail');
     Firestore.instance
-        .document('/User/4gM4qiUX1Rv7LLMttUmp')
+        .document(snapshot['ownerDetail'].toString())
         .get()
         .then((DocumentSnapshot ds) {
-      print('Doc Found Owner');
-      print(ds['firstName']);
-      setState(() {
-        ownerSnapshot = ds;
-      });
+            print('Doc Found Owner');
+            print(ds['firstName']);
+            setState(() {
+              ownerSnapshot = ds;
+            });
+        });
+    print('Outside 108');
+    userReference= await LocalStorage.sharedInstance.loadUserRef(Constants.userRef);
+    Firestore.instance.document('/User/'+userReference).get().then((DocumentSnapshot ds){
+      print('Loged in with '+ds['firstName']);
+      if(ds.data.containsKey('FavouriteHouse')){
+        if(ds['FavouriteHouse'].contains('/House/'+snapshot.documentID)){
+          setState(() {
+            _fireStatus=true;
+            print('TRUE');
+          });
+        }
+      }
     });
   }
 
@@ -128,7 +138,7 @@ class _HouseDetailState extends State<HouseDetail> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  snapshot['Address']['society'],
+                  ''+snapshot['Address']['society'],
                   //"Shangrila Luxury Apartment",
                 ),
               ),
@@ -143,7 +153,7 @@ class _HouseDetailState extends State<HouseDetail> {
                         size: 12.0,
                       ),
                       Text(
-                        snapshot['Address']['city'],
+                        ''+snapshot['Address']['city'],
                         style: TextStyle(
                           fontSize: 12,
                         ),
@@ -206,16 +216,39 @@ class _HouseDetailState extends State<HouseDetail> {
                                   elevation: 10.0,
                                   child: new Icon(
                                     Icons.favorite,
-                                    color: (_isPressed)
+                                    color: (_fireStatus)
                                         ? Colors.blue[700]
                                         : Colors.grey,
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      _isPressed = _isPressed ? false : true;
+                                      _fireStatus = !_fireStatus;
                                     });
+                                    if(_fireStatus){
+                                                Firestore.instance.runTransaction((transaction) async{
+                                                var docsSnap = await transaction.get(snapshot.reference);
+                                                await transaction.update(docsSnap.reference,{
+                                                  'favourite': docsSnap['favourite']+1,
+                                                });
+                                                });
+                                                Firestore.instance.document('/User/'+userReference).updateData({
+                                                  'FavouriteHouse':FieldValue.arrayUnion(['/House/'+snapshot.documentID])
+                                                });
+
+                                              } else{
+                                                Firestore.instance.runTransaction((transaction) async{
+                                                  var docsSnap = await transaction.get(snapshot.reference);
+                                                  await transaction.update(docsSnap.reference,{
+                                                    'favourite': docsSnap['favourite']-1,
+                                                  });
+                                                });
+                                                Firestore.instance.document('/User/'+userReference).updateData({
+                                                  'FavouriteHouse':FieldValue.arrayRemove(['/House/'+snapshot.documentID])
+                                                });
+                                              }
+                                              
                                     Fluttertoast.showToast(
-                                        msg: (_isPressed)
+                                        msg: (_fireStatus)
                                             ? "Added to Favorites"
                                             : "Removed from Favorites",
                                         toastLength: Toast.LENGTH_SHORT,
@@ -317,15 +350,6 @@ class _HouseDetailState extends State<HouseDetail> {
                                         color: Colors.white,
                                       ),
                                       onPressed: () async {
-                                      //   Fluttertoast.showToast(
-                                      //     msg: "Start Chatting with ${docsSnap['firstName']}",
-                                      //     toastLength: Toast.LENGTH_SHORT,
-                                      //     gravity: ToastGravity.BOTTOM,
-                                      //     timeInSecForIos: 1,
-                                      //     backgroundColor: Colors.black,
-                                      //     textColor: Colors.white,
-                                      //     fontSize: size.getWidthPx(15)
-                                      //   );
                                       var url = "sms:"+ownerSnapshot['mobileNo'].toString();
                                         if (await canLaunch(url)) {
                                           await launch(url);
@@ -509,7 +533,7 @@ Widget getThirdCard() {
                                   color: Colors.black.withOpacity(0.6),
                                 ),
                                 Text(
-                                  snapshot['depositAmount'],
+                                  ''+snapshot['depositAmount'],
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 18,
@@ -562,7 +586,7 @@ Widget getThirdCard() {
                                   color: Colors.black.withOpacity(0.6),
                                 ),
                                 Text(
-                                  snapshot['monthlyRent'].toString(),
+                                  ''+snapshot['monthlyRent'].toString(),
                                   style: TextStyle(
                                       fontSize: 18,
                                       color: Colors.black.withOpacity(0.6)),
@@ -620,7 +644,7 @@ Widget getFourthCard() {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              snapshot['Overview']['furnishingStatus'],//'Fully Furnished',
+                              ''+snapshot['Overview']['furnishingStatus'],//'Fully Furnished',
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontSize: 18,
@@ -665,7 +689,7 @@ Widget getFourthCard() {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              snapshot['Overview']['preferedType'].toString(),
+                              ''+snapshot['Overview']['preferedType'].toString(),
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.black.withOpacity(0.6)),
@@ -736,12 +760,254 @@ Widget getFifthCard() {
                   SizedBox(
                     height: 15,
                   ),
-                  // Body Here
-                ],
-              )),
-        ),
-      ),
-    ),
+                  Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          child: Row(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  ResponsiveContainer(
+                                    widthPercent: 44,
+                                    heightPercent: 6,
+                                    child: Container(
+                                      padding: new EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(
+                                            color: Colors.grey,
+                                            width: 2,
+                                          ),
+                                          left: BorderSide(
+                                            color: Colors.grey,
+                                            width: 2,
+                                          ),
+                                          right: BorderSide(
+                                            color: Colors.grey,
+                                            width: 2,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(FontAwesomeIcons.bed,color: Colors.black.withOpacity(0.6)),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            snapshot['Overview']['room']+' Bedroom',
+                                            style: TextStyle(
+                                              color: Colors.black.withOpacity(0.6),
+                                              fontSize: 20,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    ResponsiveContainer(
+                                      widthPercent: 44,
+                                      heightPercent: 6,
+                                      child: Container(
+                                        padding: new EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                            left: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                            right: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Row(
+                                        children: <Widget>[
+                                          Icon(FontAwesomeIcons.solidHeart,color: Colors.black.withOpacity(0.6)),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            snapshot['favourite'].toString()+' Likes',
+                                            style: TextStyle(
+                                              color: Colors.black.withOpacity(0.6),
+                                              fontSize: 20,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    ResponsiveContainer(
+                                      widthPercent: 44,
+                                      heightPercent: 6,
+                                      child: Container(
+                                        padding: new EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                            left: BorderSide(
+                                              color: Colors.grey,
+                                              width: 1.5,
+                                            ),
+                                            right: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                            bottom: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Row(
+                                        children: <Widget>[
+                                          Icon(FontAwesomeIcons.home,color: Colors.black.withOpacity(0.6)),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            //'Apartment',
+                                            snapshot['Overview']['propertyType'],
+                                            style: TextStyle(
+                                              color: Colors.black.withOpacity(0.6),
+                                              fontSize: 20,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    ResponsiveContainer(
+                                      widthPercent: 43,
+                                      heightPercent: 6,
+                                      child: Container(
+                                        padding: new EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                            right: BorderSide(
+                                              color: Colors.grey,
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Row(
+                                        children: <Widget>[
+                                          Icon(FontAwesomeIcons.toilet,color: Colors.black.withOpacity(0.6)),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            snapshot['Overview']['bathroom']+' Bathroom',
+                                            style: TextStyle(
+                                              color: Colors.black.withOpacity(0.6),
+                                              fontSize: 20,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    ResponsiveContainer(
+                                      widthPercent: 43,
+                                      heightPercent: 6,
+                                      child: Container(
+                                        padding: new EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(
+                                                color: Colors.grey,
+                                                width: 2,
+                                              ),
+                                              right: BorderSide(
+                                                color: Colors.grey,
+                                                width: 2,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(FontAwesomeIcons.calendarAlt,color: Colors.black.withOpacity(0.6)),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                DateFormat('dd/MM/yyyy').format((snapshot['Date Created'] as Timestamp).toDate()).toString(),
+                                                style: TextStyle(
+                                                  color: Colors.black.withOpacity(0.6),
+                                                  fontSize: 20,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                        ),
+                                      ),
+                                      ResponsiveContainer(
+                                        widthPercent: 43,
+                                        heightPercent: 6,
+                                          child: Container(
+                                            padding: new EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(
+                                                color: Colors.grey,
+                                                width: 2,
+                                              ),
+                                              right: BorderSide(
+                                                color: Colors.grey,
+                                                width: 2,
+                                              ),
+                                              bottom: BorderSide(
+                                                color: Colors.grey,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(FontAwesomeIcons.key,color: Colors.black.withOpacity(0.6)),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                snapshot['status'],
+                                                style: TextStyle(
+                                                  color: Colors.black.withOpacity(0.6),
+                                                  fontSize: 20,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    ),
+                  ),
+                ),
+              ),
   );
 }
 
@@ -781,7 +1047,7 @@ Widget getSixthCard() {
                   height: 15,
                 ),
                 Text(
-                    snapshot['description'].toString(),
+                    snapshot['description'],
                 ),
                 // Body Here
               ],
@@ -827,6 +1093,13 @@ Widget getSeventhCard() {
                   SizedBox(
                     height: 15,
                   ),
+                  Wrap(
+                    children: <Widget>[
+                      for(var i in snapshot['Facilities'])
+                        getFacility(i)
+                    ],
+                  )
+                  
                   // Body Here
                 ],
               )),
@@ -836,7 +1109,336 @@ Widget getSeventhCard() {
   );
 }
 
-Widget getEightCard() {
+Widget getFacility(var fac){
+  switch(fac){
+    case 'Fire Safety':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffE6B15C), Color(0xffFFF84E)])),   
+              child: Image.asset(
+                'assets/icons/fire-extinguisher.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+    case 'Air Conditioner':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffFFB849), Color(0xffD20B54)])),   
+              
+              child: Image.asset(
+                'assets/icons/ac.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+    case 'Washing Machine':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xff76BAFF), Color(0xff4EFFF8)])),   
+              
+              child: Image.asset(
+                'assets/icons/washing-machine.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+    case 'Car Parking':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xff3A40EE), Color(0xffF747AB)])),   
+              
+              child: Image.asset(
+                'assets/icons/parking.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Wi-Fi':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffff74a4), Color(0xffCA54D4)])),   
+              
+              child: Image.asset(
+                'assets/icons/wifi-signal.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Tiffin Facility':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffff74a4), Color(0xffCA54D4)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/restaurant.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case '24x7 Water Supply':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffE6B15C), Color(0xffFFF84E)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/water.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Garden':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xff2BFBED), Color(0xffD9E021)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/garden.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Lift':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffFBBF36), Color(0xffF88D44)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/lift.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case '24x7 CCTV':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffC8E234), Color(0xff6AEB34)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/cctv.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Swimming Pool':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xff77A5F8), Color(0xffD5A3FF)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/swimming-pool.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Security':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffB26FEC), Color(0xff22E6B9)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/watchman.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Children Park':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffB4FF4E), Color(0xff2FC145)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/children-playarea.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'Gym':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffFCCF31), Color(0xffF55555)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/dumbbell.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+      case 'HouseKeeping':
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xff60FF04), Color(0xff23EDED)])),   
+              
+              
+              child: Image.asset(
+                'assets/icons/house-keeping.png',
+                width: 45,
+              ),
+            ),
+          ),
+      );
+      break;
+  }
+}
+
+Widget getNinthCard() {
   return Center(
     child: Card(
       elevation: 6,
@@ -902,7 +1504,97 @@ Widget getEightCard() {
   );
 }
 
-Widget getNinthCard() {
+Widget getEightCard() {
+  return Center(
+  child: Card(
+    elevation: 6,
+    child: InkWell(
+      splashColor: Colors.blue.withAlpha(30),
+      child: ClipRRect(
+        borderRadius: new BorderRadius.circular(0.0),
+        child: Container(
+            padding: new EdgeInsets.fromLTRB(15, 16, 15, 16),
+            child: Column(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: new EdgeInsets.fromLTRB(0, 0, 0, 3),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          //                   <--- left side
+                          color: Colors.blue[500].withOpacity(0.6),
+                          width: 3.0,
+                        ),
+                      ),
+                    ),
+                    child: Text('ADDRESS',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black.withOpacity(0.7),
+                        )),
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    snapshot['Address']['houseNo']+' '+snapshot['Address']['society']+',',
+                    style: TextStyle(
+                      fontFamily: 'Ex02',
+                      color: Colors.black.withOpacity(0.6),
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    snapshot['Address']['locality']+',',
+                    style: TextStyle(
+                      fontFamily: 'Ex02',
+                      color: Colors.black.withOpacity(0.6),
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    snapshot['Address']['city']+',',
+                    style: TextStyle(
+                      fontFamily: 'Ex02',
+                      color: Colors.black.withOpacity(0.6),
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    snapshot['Address']['state']+', '+snapshot['Address']['pincode'],
+                    style: TextStyle(
+                      fontFamily: 'Ex02',
+                      fontSize: 18,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  ),
+                ),
+
+                // Body Here
+              ],
+            )),
+      ),
+    ),
+  ),
+    );
+}
+
+
+Widget getTenthCard() {
   return Center(
     child: Card(
       elevation: 6,
@@ -952,7 +1644,7 @@ Widget getNinthCard() {
 Widget getUserCard(var context){
     var size = Screen(MediaQuery.of(context).size);
     return ownerSnapshot!=null ? Card(
-      elevation: 4,
+      elevation: 0,
       borderOnForeground: true,
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
@@ -1007,9 +1699,13 @@ Widget getUserCard(var context){
                         SizedBox(
                           height: size.getWidthPx(10),
                         ),
-                        Text(
-                          "${ownerSnapshot['email']}",
-                          style: TextStyle(color: Colors.grey,fontSize: size.getWidthPx(15))
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            "${ownerSnapshot['email']}",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(color: Colors.grey,fontSize: size.getWidthPx(15))
+                          ),
                         )
                       ],
                     ),
@@ -1045,6 +1741,8 @@ Widget getCards() {
         getEightCard(),
 // Ninth Card
         getNinthCard(),
+        // Tenth Card
+        getTenthCard(),
       ],
     ),
   );

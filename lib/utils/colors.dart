@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 Color colorCurve = Colors.blue[700]; //Color.fromRGBO(97, 10, 165, 0.8);
 Color colorCurveSecondary = Colors.blue[700].withOpacity(0.8); //Color.fromRGBO(97, 10, 155, 0.6);
