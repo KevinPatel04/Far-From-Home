@@ -56,7 +56,7 @@ class _UsersState extends State<Users> {
       key: _scaffoldKey,
       appBar: searchBar.build(context),
       body: StreamBuilder(
-          stream: Firestore.instance.collection('User').snapshots(),
+          stream: FirebaseFirestore.instance.collection('User').snapshots(),
           builder: (context, snapshot) {
           return (snapshot.connectionState == null || !snapshot.hasData )
           ? new Center(
@@ -92,7 +92,7 @@ class _UsersState extends State<Users> {
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (_)=> ProfilePage('/User/'+docsSnap.documentID,true)));
+              Navigator.push(context, MaterialPageRoute(builder: (_)=> ProfilePage('/User/'+docsSnap.id,true)));
               //Fluttertoast.showToast(msg: "Card Tapped ${docsSnap['firstName']} ${docsSnap['lastName']}" );
             },
             child: Container(
@@ -103,7 +103,7 @@ class _UsersState extends State<Users> {
                   Container(
                     width: size.hp(15),
                     color: Colors.grey,
-                    child: docsSnap.data.containsKey("profileImage") ? Image.network(
+                    child: docsSnap.data().containsKey("profileImage") ? Image.network(
                       '${docsSnap['profileImage']}',
                     ) : Image.asset('assets/icons/avatar.png'),
                   ),
@@ -132,7 +132,7 @@ class _UsersState extends State<Users> {
                                 size: size.getWidthPx(16),
                                 color: Colors.grey,
                               ),
-                              docsSnap.data.containsKey("city") ? 
+                              docsSnap.data().containsKey("city") ?
                               Text(
                                 "${docsSnap['city']}, India",
                                 style: TextStyle(color: Colors.grey,fontSize: size.getWidthPx(16)),
@@ -174,7 +174,7 @@ class _UsersState extends State<Users> {
                                             msg: "Can't Lauch Phone",
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
-                                            timeInSecForIos: 1,
+                                            timeInSecForIosWeb: 1,
                                             backgroundColor: Colors.black,
                                             textColor: Colors.white,
                                             fontSize: size.getWidthPx(15)
@@ -222,7 +222,7 @@ class _UsersState extends State<Users> {
                                             msg: "Can't Lauch Phone",
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
-                                            timeInSecForIos: 1,
+                                            timeInSecForIosWeb: 1,
                                             backgroundColor: Colors.black,
                                             textColor: Colors.white,
                                             fontSize: size.getWidthPx(15)

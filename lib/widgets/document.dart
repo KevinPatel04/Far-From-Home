@@ -85,14 +85,14 @@ Future<Document> generateDocument(PdfPageFormat format,payment,owner) async {
   var _date = new DateFormat('dd-MM-yyyy').format(payment['dateCreated']);
    
   var size = PdfPageFormat.cm;
-  final PdfImage profileImage = await pdfImageFromImageProvider(
+  /*final PdfImage profileImage = await PdfImage.file(
       pdf: pdf.document,
       image: fw.NetworkImage(
         'https://firebasestorage.googleapis.com/v0/b/farfromhome-2019.appspot.com/o/logo_inverted.png?alt=media&token=16da4a5e-3db6-4ff2-ae69-c5b134c6b1e8',
       ),
       onError: (dynamic exception, StackTrace stackTrace) {
         print('Far From Home Logo');
-      });
+      }); */
 
   pdf.addPage(MyPage(
     pageFormat: format.applyMargin(
@@ -128,9 +128,10 @@ Future<Document> generateDocument(PdfPageFormat format,payment,owner) async {
                       width: 60,
                       height: 60,
                       color: lightblue,
-                      child: profileImage == null
-                        ? Container()
-                        : Image(profileImage))),
+                      child: Container()))
+                      //child: profileImage == null
+                      //  ? Container()
+                      //  : Image(profileImage))),
                 ),
               ),
             ],

@@ -94,8 +94,8 @@ DocumentSnapshot snapshot;
 
   void ownerDetail() async {
     print('OwnerDetail');
-    Firestore.instance
-        .document(snapshot['ownerDetail'].toString())
+    FirebaseFirestore.instance
+        .doc(snapshot['ownerDetail'].toString())
         .get()
         .then((DocumentSnapshot ds) {
             print('Doc Found Owner');
@@ -106,10 +106,10 @@ DocumentSnapshot snapshot;
         });
     print('Outside 108');
     userReference= await LocalStorage.sharedInstance.loadUserRef(Constants.userRef);
-    Firestore.instance.document('/User/'+userReference).get().then((DocumentSnapshot ds){
+    FirebaseFirestore.instance.doc('/User/'+userReference).get().then((DocumentSnapshot ds){
       print('Loged in with '+ds['firstName']);
-      if(ds.data.containsKey('FavouriteHouse')){
-        if(ds['FavouriteHouse'].contains('/House/'+snapshot.documentID)){
+      if(ds.data().containsKey('FavouriteHouse')){
+        if(ds['FavouriteHouse'].contains('/House/'+snapshot.id)){
           setState(() {
             _fireStatus=true;
             print('TRUE');
@@ -225,25 +225,25 @@ DocumentSnapshot snapshot;
                                       _fireStatus = !_fireStatus;
                                     });
                                     if(_fireStatus){
-                                                Firestore.instance.runTransaction((transaction) async{
+                                                FirebaseFirestore.instance.runTransaction((transaction) async{
                                                 var docsSnap = await transaction.get(snapshot.reference);
                                                 await transaction.update(docsSnap.reference,{
                                                   'favourite': docsSnap['favourite']+1,
                                                 });
                                                 });
-                                                Firestore.instance.document('/User/'+userReference).updateData({
-                                                  'FavouriteHouse':FieldValue.arrayUnion(['/House/'+snapshot.documentID])
+                                                FirebaseFirestore.instance.doc('/User/'+userReference).update({
+                                                  'FavouriteHouse':FieldValue.arrayUnion(['/House/'+snapshot.id])
                                                 });
 
                                               } else{
-                                                Firestore.instance.runTransaction((transaction) async{
+                                                FirebaseFirestore.instance.runTransaction((transaction) async{
                                                   var docsSnap = await transaction.get(snapshot.reference);
                                                   await transaction.update(docsSnap.reference,{
                                                     'favourite': docsSnap['favourite']-1,
                                                   });
                                                 });
-                                                Firestore.instance.document('/User/'+userReference).updateData({
-                                                  'FavouriteHouse':FieldValue.arrayRemove(['/House/'+snapshot.documentID])
+                                                FirebaseFirestore.instance.doc('/User/'+userReference).update({
+                                                  'FavouriteHouse':FieldValue.arrayRemove(['/House/'+snapshot.id])
                                                 });
                                               }
                                               
@@ -253,7 +253,7 @@ DocumentSnapshot snapshot;
                                             : "Removed from Favorites",
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIos: 1,
+                                        timeInSecForIosWeb: 1,
                                         backgroundColor: Colors.black,
                                         textColor: Colors.white,
                                         fontSize: 16.0);
@@ -319,7 +319,7 @@ DocumentSnapshot snapshot;
                                             msg: "Can't Lauch Phone",
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
-                                            timeInSecForIos: 1,
+                                            timeInSecForIosWeb: 1,
                                             backgroundColor: Colors.black,
                                             textColor: Colors.white,
                                             fontSize: 15
@@ -358,7 +358,7 @@ DocumentSnapshot snapshot;
                                             msg: "Can't Lauch Phone",
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
-                                            timeInSecForIos: 1,
+                                            timeInSecForIosWeb: 1,
                                             backgroundColor: Colors.black,
                                             textColor: Colors.white,
                                             fontSize: 15
@@ -1473,7 +1473,7 @@ Widget getNinthCard() {
                   SizedBox(
                     height: 15,
                   ),
-                  PhotosList(snapshot.documentID.toString()),
+                  PhotosList(snapshot.id.toString()),
                   // Body Here
                   ClipRRect(
                 borderRadius: BorderRadius.circular(5),
@@ -1483,7 +1483,7 @@ Widget getNinthCard() {
                   color: Colors.blue[700],
                   child: FlatButton(
                     onPressed: (){
-                      Navigator.pushReplacement(context,MaterialPageRoute(builder: (_)=> MultiImage(snapshot.documentID,snapshot)));
+                      Navigator.pushReplacement(context,MaterialPageRoute(builder: (_)=> MultiImage(snapshot.id,snapshot)));
                     },
                     child: Center(child: Text(
                       "ADD HOUSE IMAGES",
@@ -1649,7 +1649,7 @@ Widget getUserCard(var context){
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
           onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (_)=> ProfilePage('/User/'+ownerSnapshot.documentID,true)));
+            Navigator.push(context, MaterialPageRoute(builder: (_)=> ProfilePage('/User/'+ownerSnapshot.id,true)));
             //Fluttertoast.showToast(msg: "Card Tapped ${docsSnap['firstName']} ${docsSnap['lastName']}" );
           },
           child: Container(
@@ -1660,7 +1660,7 @@ Widget getUserCard(var context){
                 Container(
                   width: size.hp(15),
                   color: Colors.grey,
-                  child: ownerSnapshot.data.containsKey("profileImage") ? Image.network(
+                  child: ownerSnapshot.data().containsKey("profileImage") ? Image.network(
                     '${ownerSnapshot['profileImage']}',
                   ) : Image.asset('assets/icons/avatar.png'),
                 ),
@@ -1689,7 +1689,7 @@ Widget getUserCard(var context){
                               size: size.getWidthPx(16),
                               color: Colors.grey,
                             ),
-                            ownerSnapshot.data.containsKey("city") ? 
+                            ownerSnapshot.data().containsKey("city") ?
                             Text(
                               "${ownerSnapshot['city']}, India",
                               style: TextStyle(color: Colors.grey,fontSize: size.getWidthPx(16)),

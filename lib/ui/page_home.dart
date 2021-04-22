@@ -34,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
     docRef= await LocalStorage.sharedInstance.loadUserRef(Constants.userRef);
     print('docRef :'+ docRef);
     if(docRef != "NULL"){
-      Firestore.instance.document('/User/'+docRef).get().then((DocumentSnapshot docs) {
+      FirebaseFirestore.instance.doc('/User/'+docRef).get().then((DocumentSnapshot docs) {
         print("Doc found");
         setState(() {
           docsSnap = docs;  
@@ -106,7 +106,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
-      drawer: docsSnap != null ? drawer(image1,context,docsSnap.data['profileImage'],docsSnap.data['firstName']+" "+docsSnap.data['lastName'],docsSnap.data['email'],"true",'/User/'+docRef) 
+      drawer: docsSnap != null ? drawer(image1,context,docsSnap.data()['profileImage'],docsSnap.data()['firstName']+" "+docsSnap.data()['lastName'],docsSnap.data()['email'],"true",'/User/'+docRef)
                               : drawer(image1,context,'assets/icons/avatar.png','Login / Register ','','false',null),
     );
   }

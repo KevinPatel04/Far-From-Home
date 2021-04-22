@@ -81,7 +81,7 @@ class Block extends StatelessWidget {
           ]),
           Container(
             decoration: const BoxDecoration(
-                border: BoxBorder(left: true, color: blue, width: 2)),
+                border: Border(left: BorderSide(color: blue, width: 2))),
             padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
             margin: const EdgeInsets.only(left: 5),
             child: Column(
@@ -102,7 +102,7 @@ class Category extends StatelessWidget {
   @override
   Widget build(Context context) {
     return Container(
-        decoration: const BoxDecoration(color: lightblue, borderRadius: 6),
+        decoration: const BoxDecoration(color: lightblue, borderRadius:BorderRadius.all(Radius.circular(6.0))),
         margin: const EdgeInsets.only(bottom: 10, top: 20),
         padding: const EdgeInsets.fromLTRB(10, 7, 10, 4),
         child: Text(title, textScaleFactor: 1.5));

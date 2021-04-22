@@ -27,7 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Screen size;
 
   final DocumentReference documentReference =
-  Firestore.instance.collection("User").document();
+  FirebaseFirestore.instance.collection("User").doc();
 
     // adding data to fire store
 
@@ -41,7 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
       "status" : true,
       "Date Created" : DateTime.now(),
     };
-    documentReference.setData(data).whenComplete(() {
+    documentReference.set(data).whenComplete(() {
       print("Data added");
     }).catchError((e) => print(e));
   }
@@ -59,7 +59,7 @@ class _SignUpPageState extends State<SignUpPage> {
     FocusScope.of(context).requestFocus(new FocusNode());
     if(validateAndSave()){
       try{
-        AuthResult user= await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
+        UserCredential user= await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
         print("signed in  ${user.user.uid}");
         _uid = user.user.uid;
         try {
@@ -69,19 +69,19 @@ class _SignUpPageState extends State<SignUpPage> {
           print("An error occured while trying to send email verification");
         }
         _add();
-        Firestore.instance.collection('User').where('uid', isEqualTo: _uid)
+        FirebaseFirestore.instance.collection('User').where('uid', isEqualTo: _uid)
           .snapshots().listen(
                 (data) {
-                  print('Docfound :  ${data.documents[0].documentID}');
-                  LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.documents[0].documentID);
+                  print('Docfound :  ${data.docs[0].id}');
+                  LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.docs[0].id);
                 }
         );
         Fluttertoast.showToast(msg: "Account Resgistered Successfully");
-        Firestore.instance.collection('User').where('uid', isEqualTo: user.user.uid)
+        FirebaseFirestore.instance.collection('User').where('uid', isEqualTo: user.user.uid)
           .snapshots().listen(
                 (data) {
-                  print('Docfound :  ${data.documents[0].documentID}');
-                  LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.documents[0].documentID.toString());
+                  print('Docfound :  ${data.docs[0].id}');
+                  LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.docs[0].id.toString());
                 }
           );
         Navigator.pushReplacement(context,

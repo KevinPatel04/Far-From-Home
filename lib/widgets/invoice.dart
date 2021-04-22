@@ -45,7 +45,12 @@ class InvoiceState extends State<Invoice> {
     final Directory appDocDir = await getApplicationDocumentsDirectory();
     final String appDocPath = appDocDir.path;
     final File file = File(appDocPath + '/' + '$_filename.pdf');
-    await file.writeAsBytes((await generateDocument(PdfPageFormat.a4,payment,owner)).save());
+
+    // TODO Reset the function to writeAsBytes
+    //await file.writeAsBytes(await generateDocument(PdfPageFormat.a4,payment,owner).save());
+    final pdf.Document document = await generateDocument(PdfPageFormat.a4,payment,owner);
+    file.writeAsString(document.toString());
+
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
@@ -67,8 +72,9 @@ class InvoiceState extends State<Invoice> {
     final Offset bottomRight =
         referenceBox.localToGlobal(referenceBox.paintBounds.bottomRight);
     final Rect bounds = Rect.fromPoints(topLeft, bottomRight);
-    await Printing.sharePdf(
-        bytes: document.save(), filename: '$_filename.pdf', bounds: bounds);
+    // TODO Fix Future bytes error (uncomment to see error)
+    /*await Printing.sharePdf(
+        bytes: document.save(), filename: '$_filename.pdf', bounds: bounds);*/
     //Navigator.push(context,MaterialPageRoute(builder: (_) => SearchPage()));
   }
 

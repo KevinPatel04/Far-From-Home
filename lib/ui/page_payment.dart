@@ -320,8 +320,8 @@ class _PaymentPageState extends State<PaymentPage> {
       'name': docsSnap['firstName']+' '+docsSnap['lastName'],
       'mobileNo': docsSnap['mobileNo'],
       'email': docsSnap['email'],
-      'address': docsSnap.data.containsKey('address') ? docsSnap['address'] : '',
-      'city': docsSnap.data.containsKey('city') ? docsSnap['city'] : '',
+      'address': docsSnap.data().containsKey('address') ? docsSnap['address'] : '',
+      'city': docsSnap.data().containsKey('city') ? docsSnap['city'] : '',
     };
     //openCheckout();
   }
@@ -353,7 +353,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     Fluttertoast.showToast(
-        msg: "SUCCESS: " + response.paymentId, timeInSecForIos: 4);
+        msg: "SUCCESS: " + response.paymentId, timeInSecForIosWeb: 4);
     var payment = {
       'dateCreated' : new DateTime.now(),
       'amount' : _amount,
@@ -369,14 +369,14 @@ class _PaymentPageState extends State<PaymentPage> {
       'startDate' : _startDate,
       'lastDate' : _lastDate,
     };
-    Firestore.instance.collection('Payment').add(payment);
+    FirebaseFirestore.instance.collection('Payment').add(payment);
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Invoice(payment,owner)));
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     Fluttertoast.showToast(
         msg: "ERROR: " + response.code.toString() + " - " + response.message,
-        timeInSecForIos: 4);
+        timeInSecForIosWeb: 4);
       var payment = {
       'dateCreated' : new DateTime.now(),
       'amount' : _amount,
@@ -391,14 +391,14 @@ class _PaymentPageState extends State<PaymentPage> {
       'startDate' : _startDate,
       'lastDate' : _lastDate,
     };
-    Firestore.instance.collection('Payment').add(payment);
+    FirebaseFirestore.instance.collection('Payment').add(payment);
     //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Invoice(payment,owner)));
     Navigator.pop(context);
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     Fluttertoast.showToast(
-        msg: "EXTERNAL_WALLET: " + response.walletName, timeInSecForIos: 4);
+        msg: "EXTERNAL_WALLET: " + response.walletName, timeInSecForIosWeb: 4);
     var payment = {
       'dateCreated' : new DateTime.now(),
       'amount' : _amount,
@@ -413,7 +413,7 @@ class _PaymentPageState extends State<PaymentPage> {
       'startDate' : _startDate,
       'lastDate' : _lastDate,
     };
-    Firestore.instance.collection('Payment').add(payment);
+    FirebaseFirestore.instance.collection('Payment').add(payment);
     //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Invoice(payment,owner)));
     Navigator.pop(context);
   }

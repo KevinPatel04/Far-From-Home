@@ -104,9 +104,10 @@ class _MultiImageState extends State<MultiImage> {
       var t = await pic.filePath;
       File file=new File(t);
       filePath = '${DateTime.now()}.png';
-      StorageReference ref = FirebaseStorage(storageBucket: 'gs://farfromhome-2019.appspot.com/').ref().child(filePath); 
-      StorageUploadTask task = ref.putFile(file);
-      StorageTaskSnapshot storageTaskSnapshot = await task.onComplete;
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.refFromURL('gs://farfromhome-2019.appspot.com/').child(filePath);
+      UploadTask task = ref.putFile(file);
+      TaskSnapshot storageTaskSnapshot = await task.whenComplete(() => null);
       String url = await storageTaskSnapshot.ref.getDownloadURL();
       
       //print("\nUploaded: "+url);
@@ -136,7 +137,7 @@ class _MultiImageState extends State<MultiImage> {
   }
 
   Future<void> loadAssets() async {
-    List<Asset> resultList = List<Asset>();
+    List<Asset> resultList = [];
     String error = 'No Error Dectected';
 
     try {
@@ -155,7 +156,7 @@ class _MultiImageState extends State<MultiImage> {
       );
 
       for (var r in resultList) {
-        var t = await r.filePath;
+        var t = await r.name;
         //print(t);
       }
       if(resultList.isNotEmpty){
@@ -202,7 +203,7 @@ class _MultiImageState extends State<MultiImage> {
                 icon: Icon(choices[1].icon),
                 onPressed: () {
                   print('Saved');
-                  Firestore.instance.collection('House').document(path).updateData({
+                  FirebaseFirestore.instance.collection('House').doc(path).update({
                     'ReviewImage' : FieldValue.arrayUnion(imageDataPath) ,
                   }).whenComplete((){
                       print('Data Upload Complete');
