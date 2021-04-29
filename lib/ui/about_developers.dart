@@ -175,7 +175,7 @@ class AboutDevelopers extends StatelessWidget{
                                                     msg: "Can't Lauch $url",
                                                     toastLength: Toast.LENGTH_SHORT,
                                                     gravity: ToastGravity.BOTTOM,
-                                                    timeInSecForIos: 1,
+                                                    timeInSecForIosWeb: 1,
                                                     backgroundColor: Colors.black,
                                                     textColor: Colors.white,
                                                     fontSize: size.getWidthPx(16)
@@ -197,7 +197,7 @@ class AboutDevelopers extends StatelessWidget{
                                                     msg: "Can't Lauch $url",
                                                     toastLength: Toast.LENGTH_SHORT,
                                                     gravity: ToastGravity.BOTTOM,
-                                                    timeInSecForIos: 1,
+                                                    timeInSecForIosWeb: 1,
                                                     backgroundColor: Colors.black,
                                                     textColor: Colors.white,
                                                     fontSize: size.getWidthPx(16)
@@ -219,7 +219,7 @@ class AboutDevelopers extends StatelessWidget{
                                                     msg: "Can't Lauch $url",
                                                     toastLength: Toast.LENGTH_SHORT,
                                                     gravity: ToastGravity.BOTTOM,
-                                                    timeInSecForIos: 1,
+                                                    timeInSecForIosWeb: 1,
                                                     backgroundColor: Colors.black,
                                                     textColor: Colors.white,
                                                     fontSize: size.getWidthPx(16)

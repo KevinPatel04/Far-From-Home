@@ -25,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void addSnapshot(){
-    Firestore.instance.document(docPath).get().then((doc){
+    FirebaseFirestore.instance.doc(docPath).get().then((doc){
       print('doc found');
       print(doc['firstName']);
       setState((){
@@ -45,7 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
         elevation: 0,
       ),
       body: StreamBuilder(
-          stream: Firestore.instance.document(docPath).snapshots(),
+          stream: FirebaseFirestore.instance.doc(docPath).snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return Center(child: const CircularProgressIndicator());
             return ListView.builder(
@@ -133,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                 msg: "Can't Lauch Phone",
                                                                 toastLength: Toast.LENGTH_SHORT,
                                                                 gravity: ToastGravity.BOTTOM,
-                                                                timeInSecForIos: 1,
+                                                                timeInSecForIosWeb: 1,
                                                                 backgroundColor: Colors.black,
                                                                 textColor: Colors.white,
                                                                 fontSize: size.getWidthPx(15)
@@ -181,7 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                 msg: "Can't Lauch Phone",
                                                                 toastLength: Toast.LENGTH_SHORT,
                                                                 gravity: ToastGravity.BOTTOM,
-                                                                timeInSecForIos: 1,
+                                                                timeInSecForIosWeb: 1,
                                                                 backgroundColor: Colors.black,
                                                                 textColor: Colors.white,
                                                                 fontSize: size.getWidthPx(15)

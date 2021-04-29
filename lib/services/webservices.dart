@@ -33,7 +33,7 @@ class WebServices {
   void getListOfPhotos(BuildContext context) async {
     if (await Utils.checkConnection()) {
       http.get(
-        Constants.PHOTOSURL + Constants.PHOTOS,
+        Uri.parse(Constants.PHOTOSURL + Constants.PHOTOS),
         headers: {
           'Authorization': "Client-ID " + Constants.accessKey,
         },

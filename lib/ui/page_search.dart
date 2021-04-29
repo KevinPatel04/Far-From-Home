@@ -36,7 +36,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
     return Scaffold(
       backgroundColor: backgroundColor,
       body: StreamBuilder(
-          stream: Firestore.instance.collection('House').snapshots(),
+          stream: FirebaseFirestore.instance.collection('House').snapshots(),
           builder: (context, snapshot) {
             return (snapshot.connectionState == null )
           ? new Center(
@@ -242,24 +242,24 @@ class _SearchResultPageState extends State<SearchResultPage> {
                                                 _isPressed[index] = !_isPressed[index];
                                               });
                                               if(_isPressed[index]){
-                                                Firestore.instance.runTransaction((transaction) async{
+                                                FirebaseFirestore.instance.runTransaction((transaction) async{
                                                 docsSnap = await transaction.get(docsSnap.reference);
                                                 await transaction.update(docsSnap.reference,{
                                                   'favourite': docsSnap['favourite']+1,
                                                 });
                                                 });
-                                                Firestore.instance.document(userReference).updateData({
-                                                  'FavouriteHouse':FieldValue.arrayUnion(['/House/'+docsSnap.documentID])
+                                                FirebaseFirestore.instance.doc(userReference).update({
+                                                  'FavouriteHouse':FieldValue.arrayUnion(['/House/'+docsSnap.id])
                                                 });
                                               } else{
-                                                Firestore.instance.runTransaction((transaction) async{
+                                                FirebaseFirestore.instance.runTransaction((transaction) async{
                                                   docsSnap = await transaction.get(docsSnap.reference);
                                                   await transaction.update(docsSnap.reference,{
                                                     'favourite': docsSnap['favourite']-1,
                                                   });
                                                 });
-                                                Firestore.instance.document(userReference).updateData({
-                                                  'FavouriteHouse':FieldValue.arrayRemove(['/House/'+docsSnap.documentID])
+                                                FirebaseFirestore.instance.doc(userReference).update({
+                                                  'FavouriteHouse':FieldValue.arrayRemove(['/House/'+docsSnap.id])
                                                 });
                                               }
                                               Fluttertoast.showToast(
@@ -268,7 +268,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                                                       : "Removed from Favorites",
                                                   toastLength: Toast.LENGTH_SHORT,
                                                   gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIos: 1,
+                                                  timeInSecForIosWeb: 1,
                                                   backgroundColor: Colors.black,
                                                   textColor: Colors.white,
                                                   fontSize: 16.0

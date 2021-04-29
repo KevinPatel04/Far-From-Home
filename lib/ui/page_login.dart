@@ -46,17 +46,17 @@ class _LoginPageState extends State<LoginPage> {
     FocusScope.of(context).requestFocus(new FocusNode());
     if (validateAndSave()) {
       try {
-        AuthResult user = await FirebaseAuth.instance
+        UserCredential user = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password);
         Fluttertoast.showToast(msg: 'Log In Successful');
         //print("signed in  ${user.user.uid}");
         LocalStorage.sharedInstance
             .setAuthStatus(key: Constants.isLoggedIn, value: "true");
-        Firestore.instance.collection('User').where('uid', isEqualTo: user.user.uid)
+        FirebaseFirestore.instance.collection('User').where('uid', isEqualTo: user.user.uid)
           .snapshots().listen(
                 (data) {
-                  print('Docfound :  ${data.documents[0].documentID}');
-                  LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.documents[0].documentID.toString());
+                  print('Docfound :  ${data.docs[0].id}');
+                  LocalStorage.sharedInstance.setUserRef(key: Constants.userRef,value: data.docs[0].id.toString());
                 }
         );
         Navigator.pushReplacement(
@@ -81,8 +81,8 @@ class _LoginPageState extends State<LoginPage> {
       GoogleSignIn googleSignIn = GoogleSignIn();
       GoogleSignInAccount account = await googleSignIn.signIn();
       if(account == null )
-        print("Error wihile login with google  line : 83 ");
-       AuthResult res = await FirebaseAuth.instance.signInWithCredential(GoogleAuthProvider.getCredential(
+        print("Error while login with google  line : 83 ");
+       UserCredential res = await FirebaseAuth.instance.signInWithCredential(GoogleAuthProvider.credential(
         idToken: (await account.authentication).idToken,
         accessToken: (await account.authentication).accessToken,
       ));
