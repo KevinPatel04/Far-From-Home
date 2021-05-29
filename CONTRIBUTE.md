@@ -19,3 +19,8 @@
 
 ##### Note
 - To know more about current status of above listed tasks or require further explaination feel free to contact me (Contact details are mentioned on Github bio).
+
+
+Would be eagerly waiting for your pull request.
+
+Kevin Patel
