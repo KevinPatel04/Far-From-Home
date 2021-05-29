@@ -6,7 +6,8 @@
 ### Features to which you can contribute
 
 - [ ] Search, sort and filter.
-- [ ] List all House Ad. for Owners.
+- [ ] Implement Add House Image feature on house details page.
+- [ ] List all House Ad. posted for Owners.
 - [ ] Feature for Owner to track rent payments for each house that is occupied.
 - [ ] List all houses which are marked as favriote/liked.
 - [ ] Feature to edit house ad. for owners.
