@@ -6,7 +6,7 @@
 ### Features to which you can contribute
 
 - [ ] Search, sort and filter.
-- [ ] Implement Add House Image feature on house details page.
+- [x] Implement Add House Image feature on house details page. Implemented by ![@KevinPatel04](https://github.com/KevinPatel04).
 - [ ] List all House Ad. posted for Owners.
 - [ ] Feature for Owner to track rent payments for each house that is occupied.
 - [ ] List all houses which are marked as favriote/liked.
