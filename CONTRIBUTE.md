@@ -17,6 +17,7 @@
 - [ ] Show house location on Google Maps.
 - [ ] Populate the most trending house based on likes on home page.
 - [ ] Populate the recently added list based on ad. posting time.
+- [ ] Implement Google Authentication with Firebase Auth.
 
 ##### Note
 - To know more about current status of above listed tasks or require further explaination feel free to contact me (Contact details are mentioned on Github bio).
